@@ -1,0 +1,19 @@
+package models
+
+import "time"
+
+type Client struct {
+	ID               uint      `gorm:"primaryKey"`
+	NamaClient       string    `gorm:"type:varchar(100)" json:"nama_client"`
+	Role             string    `json:"role"`
+	Lokasi           string    `json:"lokasi"`
+	JumlahPegawai    int       `json:"jumlah_pegawai"`
+	JenisUsaha       string    `json:"jenis_usaha"`
+	Deskripsi        string    `json:"deskripsi"`
+	KulturPerusahaan string    `json:"kultur_perusahaan"`
+	Kontak           string    `json:"kontak"`
+	Galeri           string    `json:"galeri"`
+	Email            string    `gorm:"unique" json:"email"`
+	Password         string    `json:"password"`
+	CreatedAt        time.Time `json:"created_at"`
+}

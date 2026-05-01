@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Pelamar Proyek - MariLancy</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .text-teal-custom { color: #2b9c96; }
+    .bg-teal-custom { background-color: #2b9c96; }
+    .btn-teal {
+      background-color: #2b9c96;
+      color: white;
+      transition: 0.2s;
+    }
+    .btn-teal:hover {
+      background-color: #23827d;
+    }
+
+    .applicant-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #f1f5f9;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.02);
+      transition: 0.3s;
+    }
+    .applicant-card:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+      border-color: #e2e8f0;
+    }
+
+    select.status-dropdown {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z' fill='rgba(107,114,128,1)'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.7rem top 50%;
+      background-size: 1rem auto;
+      padding-right: 2.5rem;
+    }
+    select.status-pending { border: 1px solid #fef08a; background-color: #fef9c3; color: #a16207; }
+    select.status-accepted { border: 1px solid #bbf7d0; background-color: #dcfce7; color: #15803d; }
+    select.status-rejected { border: 1px solid #fecaca; background-color: #fee2e2; color: #b91c1c; }
+
+    .footer-dark { background-color: #000000; color: #e5e7eb; padding: 60px 40px 30px 40px; font-size: 14px; margin-top: 80px; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid #1f2937; }
+    .footer-col h4 { color: white; font-weight: 600; font-size: 16px; margin-bottom: 20px; }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .footer-col ul li { margin-bottom: 12px; color: #9ca3af; cursor: pointer; transition: 0.2s; }
+    .footer-col ul li:hover { color: white; }
+    .newsletter-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .newsletter-input { background-color: transparent; border: 1px solid #4b5563; color: white; padding: 12px 15px; border-radius: 8px; font-size: 13px; outline: none; }
+    .newsletter-input:focus { border-color: #2b9c96; }
+    .newsletter-btn { background-color: #2b9c96; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .newsletter-btn:hover { background-color: #23827d; }
+    .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 20px; display: flex; justify-content: space-between; color: #6b7280; font-size: 12px; }
+  </style>
+</head>
+
+<body>
+
+  <nav class="fixed top-0 left-0 w-full z-50 bg-black text-white px-8 py-4 flex justify-between items-center">
+    <div class="flex-1">
+      <a class="text-xl font-bold flex items-center gap-2" href="/client">
+        <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
+      </a>
+    </div>
+
+    <div class="flex-1 flex justify-center gap-8 text-sm font-medium">
+      <a href="/client" onclick="goHome()" class="text-gray-400 hover:text-white">Dashboard</a>
+      <a href="#projects" class="text-gray-400 hover:text-white">Proyek</a>
+      <a href="/client/profile/view" class="text-gray-400 hover:text-white">Lamaran</a>
+      <a href="#message" class="text-gray-400 hover:text-white">Pesan</a>
+    </div>
+
+    <div class="flex-1 flex justify-end items-center gap-5 ">
+      <span id="userGreeting" class="text-sm font-medium"></span>
+      <div class="profile-box cursor-pointer" onclick="goProfile()">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full object-cover" alt="User">
+      </div>
+      <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
+        Logout
+      </button>
+      <div class="relative cursor-pointer" onclick="goNotification()">
+        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-black text-white text-center pt-32 pb-20 relative mt-16 mb-8">
+    <h1 class="text-4xl font-bold tracking-wide mb-3">Daftar Pelamar</h1>
+    <p class="text-gray-400 text-sm">Tinjau profil dan portofolio pelamar untuk proyek Anda</p>
+    
+    <button onclick="goHome()" class="absolute left-8 top-32 text-gray-400 hover:text-white flex items-center gap-2 transition">
+      <i class="ri-arrow-left-line text-xl"></i> Kembali ke Dashboard
+    </button>
+  </div>
+
+  <section class="max-w-5xl mx-auto px-4 pb-20">
+    
+    <div class="flex justify-between items-center mb-8 border-b pb-4 border-gray-200">
+      <h2 class="text-xl font-bold text-gray-800" id="totalApplicantsText">Memuat Data Pelamar...</h2>
+    </div>
+
+    <div id="applicantList" class="flex flex-col gap-2">
+      <div class="text-center py-20 bg-white rounded-2xl border border-gray-100">
+        <p class="text-gray-500 font-medium">Sedang memuat data pelamar...</p>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer-dark">
+    <div class="footer-container">
+      <div class="footer-col">
+        <a class="text-xl font-bold flex items-center gap-2 text-white mb-6" href="#"><i class="ri-briefcase-4-line text-2xl"></i> MariLancy</a>
+        <p class="text-gray-400 leading-relaxed max-w-xs">MariLancy adalah platform freelance yang menghubungkan mahasiswa dan talenta pemula dengan klien untuk mendapatkan pengalaman kerja nyata.</p>
+      </div>
+      <div class="footer-col"><h4>Tentang Kami</h4><ul><li>Tentang Platform</li><li>Tim Pengembang</li><li>Partners</li><li>Untuk Freelancer</li><li>Untuk Klien</li></ul></div>
+      <div class="footer-col"><h4>Kategori Proyek</h4><ul><li>Desain Grafis</li><li>Web Development</li><li>Content Writing</li><li>Social Media</li><li>Digital Marketing</li></ul></div>
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p class="text-gray-400 text-sm leading-relaxed">Dapatkan update proyek terbaru ke email kamu.</p>
+        <div class="newsletter-form"><input type="email" placeholder="Email Address" class="newsletter-input"><button class="newsletter-btn">Kirim</button></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MariLancy. All rights reserved.</p>
+      <div class="flex gap-6"><a href="#" class="hover:text-white transition">Kebijakan Privasi</a><a href="#" class="hover:text-white transition">Syarat & Ketentuan</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Token kosong, silakan login ulang")
+      window.location.href = "/"
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    const jobId = params.get("id") 
+
+    if (!jobId) {
+      alert("Job ID tidak ditemukan di URL")
+      window.location.href = "/client"
+    }
+
+    async function loadNavbarData() {
+      try {
+        const res = await fetch("/client/profile", { headers: { "Authorization": "Bearer " + token } })
+        if(res.ok) {
+          const profile = await res.json()
+          if(profile && profile.nama_client) {
+            const firstName = profile.nama_client.split(' ')[0]
+            document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
+            document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    function updateDropdownStyle(selectElement) {
+      selectElement.classList.remove("status-pending", "status-accepted", "status-rejected")
+      
+      if(selectElement.value === "pending") selectElement.classList.add("status-pending")
+      else if(selectElement.value === "accepted") selectElement.classList.add("status-accepted")
+      else if(selectElement.value === "rejected") selectElement.classList.add("status-rejected")
+    }
+
+    async function loadApplicants() {
+      const url = `/client/jobs/${jobId}/applicants`
+
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+
+        if (res.status === 401) {
+          alert("Sesi habis, silakan login kembali.")
+          window.location.href = "/"
+          return
+        }
+
+        const data = await res.json()
+        let html = ""
+
+        if(!data || data.length === 0) {
+          document.getElementById("totalApplicantsText").innerHTML = `Belum ada pelamar <span class="text-sm font-normal text-gray-500 ml-2">(ID Proyek: ${jobId})</span>`
+          document.getElementById("applicantList").innerHTML = `
+            <div class="text-center py-20 bg-white rounded-2xl border border-gray-100">
+              <i class="ri-user-search-line text-4xl text-gray-300 mb-3 block"></i>
+              <p class="text-gray-500 font-medium">Belum ada kandidat yang melamar di proyek ini.</p>
+            </div>
+          `
+          return
+        }
+
+        document.getElementById("totalApplicantsText").innerHTML = `Total ${data.length} Pelamar <span class="text-sm font-normal text-gray-500 ml-2">(ID Proyek: ${jobId})</span>`
+
+        data.forEach((app, index) => {
+          const f = app.freelancer || {}
+          const avatarUrl = f.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.nama || 'A')}&background=random&color=fff`
+          
+          let initialStatusClass = "status-pending"
+          if (app.status === "accepted") initialStatusClass = "status-accepted"
+          if (app.status === "rejected") initialStatusClass = "status-rejected"
+
+          const isWithdrawn = app.status === "withdrawn"
+
+          html += `
+            <div class="applicant-card flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+              
+              <div class="flex items-start gap-5">
+                <img src="${avatarUrl}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-gray-200 shadow-sm">
+                
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900">${f.nama || "Unknown Freelancer"}</h3>
+                  <p class="text-sm text-teal-custom font-medium mb-3">${f.job_interest || "Freelancer"}</p>
+                  
+                  <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-600">
+                    <span class="flex items-center gap-1.5"><i class="ri-mail-line text-gray-400 text-sm"></i> ${f.email || "-"}</span>
+                    <span class="flex items-center gap-1.5"><i class="ri-map-pin-line text-gray-400 text-sm"></i> ${f.location || "-"}</span>
+                    <span class="flex items-center gap-1.5"><i class="ri-graduation-cap-line text-gray-400 text-sm"></i> ${f.education_level || "-"}</span>
+                    <span class="flex items-center gap-1.5"><i class="ri-award-line text-gray-400 text-sm"></i> Exp: ${f.years_of_experience || 0} Tahun</span>
+                  </div>
+
+                  <div class="flex gap-4 mt-4 text-xs font-semibold">
+                    ${f.resume ? `<a href="${f.resume}" target="_blank" class="flex items-center gap-1 text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg transition"><i class="ri-file-text-line"></i> Resume</a>` : `<span class="flex items-center gap-1 text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg"><i class="ri-file-text-line"></i> No Resume</span>`}
+                    ${f.certificates ? `<a href="${f.certificates}" target="_blank" class="flex items-center gap-1 text-purple-600 hover:text-purple-800 bg-purple-50 px-3 py-1.5 rounded-lg transition"><i class="ri-medal-line"></i> Sertifikat</a>` : ""}
+                    ${f.attachments ? `<a href="${f.attachments}" target="_blank" class="flex items-center gap-1 text-orange-600 hover:text-orange-800 bg-orange-50 px-3 py-1.5 rounded-lg transition"><i class="ri-attachment-2"></i> Portofolio</a>` : ""}
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-full md:w-auto border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 flex flex-col items-start md:items-end">
+                <label class="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Aksi Status</label>
+                
+                ${isWithdrawn ? `
+                  <span class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold border border-gray-200 w-full md:w-auto text-center cursor-not-allowed">Membatalkan Diri</span>
+                ` : `
+                  <select id="statusSelect_${app.id}" onchange="updateStatus(${app.id}, this)" class="status-dropdown ${initialStatusClass} px-4 py-2 rounded-lg text-sm font-bold cursor-pointer outline-none w-full md:w-40 transition-colors">
+                    <option value="pending" ${app.status === "pending" ? "selected" : ""} class="bg-white text-gray-800">Menunggu (Pending)</option>
+                    <option value="accepted" ${app.status === "accepted" ? "selected" : ""} class="bg-white text-gray-800">Terima Pelamar</option>
+                    <option value="rejected" ${app.status === "rejected" ? "selected" : ""} class="bg-white text-gray-800">Tolak Pelamar</option>
+                  </select>
+                `}
+              </div>
+
+            </div>
+          `
+        })
+
+        document.getElementById("applicantList").innerHTML = html
+
+      } catch (err) {
+        console.error(err)
+        document.getElementById("applicantList").innerHTML = "<p class='text-red-500 text-center py-10'>Terjadi kesalahan saat memuat data server.</p>"
+      }
+    }
+
+    async function updateStatus(appId, selectElement) {
+      const newStatus = selectElement.value
+      
+      try {
+        const res = await fetch("/client/application/status", {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            application_id: appId,
+            status: newStatus
+          })
+        })
+
+        if(res.ok) {
+          updateDropdownStyle(selectElement)
+
+          const originalText = selectElement.options[selectElement.selectedIndex].text;
+          selectElement.options[selectElement.selectedIndex].text = "Tersimpan ✅";
+          setTimeout(() => {
+            selectElement.options[selectElement.selectedIndex].text = originalText;
+          }, 1500)
+        } else {
+          alert("Gagal memperbarui status. Silakan coba lagi.")
+          loadApplicants() 
+        }
+
+      } catch (err) {
+        console.error(err)
+        alert("Terjadi kesalahan jaringan.")
+      }
+    }
+
+    function goHome() {
+      const currentRole = localStorage.getItem("role");
+      if (currentRole === "freelancer") window.location.href = "/freelancer";
+      else if (currentRole === "client") window.location.href = "/client";
+      else window.location.href = "/guest"; 
+    }
+    function goProfile() { window.location.href = "/client/profile/view" }
+    function goNotification() { alert("Fitur Notifikasi Client sedang dalam pengembangan") }
+    function logout() { localStorage.clear(); window.location.href = "/" }
+
+    loadNavbarData()
+    loadApplicants()
+
+  </script>
+
+</body>
+</html>

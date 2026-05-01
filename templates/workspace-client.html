@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Workspace - MariLancy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  <style> body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .text-teal-custom { color: #2b9c96; }
+    .bg-teal-custom { background-color: #2b9c96; }
+    .btn-teal {
+      background-color: #2b9c96;
+      color: white;
+      transition: 0.2s;
+    }
+    .btn-teal:hover {
+      background-color: #23827d;
+    }
+
+    .input-form {
+      border: 1px solid #d1d5db;
+      padding: 12px 16px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      background-color: #ffffff;
+    }
+    .input-form:focus {
+      border-color: #2b9c96;
+      box-shadow: 0 0 0 3px rgba(43, 156, 150, 0.1);
+    }
+
+    .tag-checkbox input[type="checkbox"] { display: none; }
+    .tag-checkbox span {
+      display: inline-block;
+      padding: 6px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #4b5563;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .tag-checkbox input[type="checkbox"]:checked + span {
+      background-color: #eaf6f4;
+      color: #2b9c96;
+      border-color: #2b9c96;
+      font-weight: 600;
+    }
+    .footer-dark { background-color: #000000; color: #e5e7eb; padding: 60px 40px 30px 40px; font-size: 14px; margin-top: 80px; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid #1f2937; }
+    .footer-col h4 { color: white; font-weight: 600; font-size: 16px; margin-bottom: 20px; }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .footer-col ul li { margin-bottom: 12px; color: #9ca3af; cursor: pointer; transition: 0.2s; }
+    .footer-col ul li:hover { color: white; }
+    .newsletter-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .newsletter-input { background-color: transparent; border: 1px solid #4b5563; color: white; padding: 12px 15px; border-radius: 8px; font-size: 13px; outline: none; }
+    .newsletter-input:focus { border-color: #2b9c96; }
+    .newsletter-btn { background-color: #2b9c96; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .newsletter-btn:hover { background-color: #23827d; }
+    .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 20px; display: flex; justify-content: space-between; color: #6b7280; font-size: 12px; }
+
+  </style>
+</head>
+<body>
+
+  <nav class="fixed top-0 left-0 w-full z-50 bg-black text-white px-8 py-4 flex justify-between items-center">
+    <div class="flex-1">
+      <a class="text-xl font-bold flex items-center gap-2" href="/client">
+        <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
+      </a>
+    </div>
+
+    <div class="flex-1 flex justify-center gap-8 text-sm font-medium">
+      <a href="/client" onclick="setActive(this); goHome()" class="nav-link text-white pb-1">Dashboard</a>
+
+      <a href="/client#post-job" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Posting Job</a>
+
+      <a href="/client/projects" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Proyek</a>
+
+      <a href="#message" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Pesan</a>
+    </div>
+
+    <div class="flex-1 flex justify-end items-center gap-5 ">
+      <span id="userGreeting" class="text-sm font-medium"></span>
+      <div class="profile-box cursor-pointer" onclick="goProfile()">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+      </div>
+      <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
+        Logout
+      </button>
+      <div class="relative cursor-pointer" onclick="goNotification()">
+        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
+        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-4 py-10">
+    
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+          <span id="projectBadge" class="text-xs font-bold text-[#2b9c96] uppercase tracking-wider bg-[#eaf6f4] px-3 py-1 rounded-full mb-2 inline-block">Active Project</span>
+          <h1 class="text-3xl font-bold text-gray-800" id="projectName">Memuat...</h1>
+          <p class="text-sm text-gray-500 mt-2">Dikerjakan oleh: <span class="font-bold text-gray-700" id="freelancerName">-</span></p>
+        </div>
+        
+        <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center min-w-[200px]">
+          <p class="text-xs text-gray-500 font-bold uppercase mb-1">Status Pengerjaan</p>
+          <span class="text-4xl font-extrabold text-[#2b9c96]" id="progressText">0%</span>
+        </div>
+      </div>
+      
+      <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+        <div class="bg-[#2b9c96] h-4 rounded-full transition-all duration-700 ease-out" id="progressBar" style="width: 0%"></div>
+      </div>
+      <p class="text-xs text-right text-gray-400 font-medium" id="taskRatio">0 dari 0 tugas selesai</p>
+    </div>
+
+    <div id="submissionBox" class="bg-white p-8 rounded-2xl shadow-sm border border-green-100 mb-8 bg-green-50/30 hidden">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <h3 class="font-bold text-gray-800 mb-2 text-xl"><i class="ri-checkbox-circle-fill text-green-600"></i> Proyek Telah Diselesaikan!</h3>
+          <p class="text-sm text-gray-600">Freelancer telah menyerahkan hasil kerjanya di bawah ini.</p>
+        </div>
+        <button onclick="requestRevision()" class="text-red-500 hover:text-white border border-red-500 hover:bg-red-500 px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
+          <i class="ri-refresh-line"></i> Minta Pengiriman Ulang
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div id="linkContainer" class="hidden bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Link Hasil Kerja</span>
+          <a id="submissionLinkBtn" href="#" target="_blank" class="text-blue-600 text-sm font-semibold hover:underline flex items-center gap-2"><i class="ri-external-link-line text-lg"></i> Buka Tautan Eksternal</a>
+        </div>
+        
+        <div id="fileContainer" class="hidden bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">File Lampiran</span>
+          <a id="submissionFileBtn" href="#" target="_blank" download class="inline-flex bg-[#2b9c96] hover:bg-[#23827d] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition items-center gap-2"><i class="ri-download-cloud-2-line text-lg"></i> Unduh File</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+      <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-4">Daftar Tugas (To-Do List)</h2>
+      
+      <form id="taskForm" class="flex gap-3 mb-8" onsubmit="submitTask(event)">
+        <input type="text" id="taskTitle" required placeholder="Ketik tugas baru untuk freelancer (misal: Slicing Homepage, Setup Database)" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#2b9c96]">
+        <button type="submit" class="bg-[#2b9c96] hover:bg-[#23827d] text-white px-6 py-3 rounded-lg font-semibold text-sm transition flex gap-2 items-center"><i class="ri-add-line"></i> Tambah Task</button>
+      </form>
+
+      <div class="space-y-3" id="clientTaskList">
+        <p class="text-sm text-gray-500 text-center py-5">Memuat data tugas...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token")
+    const role = localStorage.getItem("role")
+
+    if (!token) { alert("Silakan login dulu"); window.location.href = "/"; }
+    if (role !== "client") { alert("Akses ditolak (bukan client)"); window.location.href = "/"; }
+
+    async function safeFetch(url, options = {}) {
+      const res = await fetch(url, options)
+      if (res.status === 401) { alert("Session habis, login ulang"); localStorage.clear(); window.location.href = "/"; return null; }
+      if (res.status === 403) { alert("Akses ditolak"); window.location.href = "/"; return null; }
+      try { return await res.json() } catch { return null }
+    }
+
+    async function loadProfileMini() {
+      const data = await safeFetch("/client/profile", { headers: { "Authorization": "Bearer " + token } })
+      if (!data) return
+      
+      localStorage.setItem("client_id", data.ID)
+      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
+      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get("project_id") || 1; 
+
+    async function loadClientWorkspace() {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        
+        document.getElementById("projectName").innerText = data.project.job.judul;
+        document.getElementById("freelancerName").innerText = data.project.freelancer.nama;
+        
+        document.getElementById("progressText").innerText = data.progress + "%";
+        document.getElementById("progressBar").style.width = data.progress + "%";
+        
+        const tasks = data.project.tasks || [];
+        const doneTasks = tasks.filter(t => t.status === 'done').length;
+        document.getElementById("taskRatio").innerText = `${doneTasks} dari ${tasks.length} tugas selesai`;
+
+        const isCompleted = data.project.status === 'completed';
+        if (isCompleted) {
+            document.getElementById("projectBadge").innerText = "Completed Project";
+            document.getElementById("projectBadge").className = "text-xs font-bold text-green-700 uppercase tracking-wider bg-green-100 px-3 py-1 rounded-full mb-2 inline-block";
+
+            document.getElementById("taskForm").classList.add("hidden");
+            document.getElementById("submissionBox").classList.remove("hidden");
+
+            if (data.project.submission_link) {
+                document.getElementById("linkContainer").classList.remove("hidden");
+                document.getElementById("submissionLinkBtn").href = data.project.submission_link;
+            }
+            if (data.project.submission_file) {
+                document.getElementById("fileContainer").classList.remove("hidden");
+                document.getElementById("submissionFileBtn").href = data.project.submission_file;
+            }
+        } else {
+            document.getElementById("projectBadge").innerText = "Active Project";
+            document.getElementById("projectBadge").className = "text-xs font-bold text-[#2b9c96] uppercase tracking-wider bg-[#eaf6f4] px-3 py-1 rounded-full mb-2 inline-block";
+            
+            document.getElementById("taskForm").classList.remove("hidden");
+            document.getElementById("submissionBox").classList.add("hidden");
+            document.getElementById("linkContainer").classList.add("hidden");
+            document.getElementById("fileContainer").classList.add("hidden");
+        }
+
+        const listContainer = document.getElementById("clientTaskList");
+        listContainer.innerHTML = "";
+        
+        if(tasks.length === 0) {
+          listContainer.innerHTML = `<p class="text-sm text-gray-500 text-center py-5">Belum ada tugas. Silakan tambahkan tugas di atas.</p>`;
+        }
+
+        tasks.forEach(task => {
+            let badgeColor = "bg-gray-100 text-gray-600";
+            if (task.status === "in_progress") badgeColor = "bg-blue-100 text-blue-700";
+            if (task.status === "done") badgeColor = "bg-green-100 text-green-700 line-through";
+
+            listContainer.innerHTML += `
+            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl bg-gray-50 group">
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-800 ${task.status === 'done' ? 'line-through text-gray-400' : ''}" id="task-text-${task.id}">${task.title}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit mt-1 ${badgeColor}">${task.status.replace('_', ' ')}</span>
+                </div>
+                
+                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editTaskPrompt(${task.id}, '${task.title}')" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg" title="Edit Tugas"><i class="ri-edit-line"></i></button>
+                    <button onclick="deleteTask(${task.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Hapus Tugas"><i class="ri-delete-bin-line"></i></button>
+                </div>
+            </div>
+            `;
+        });
+      }
+    }
+    async function loadProfileMini() {
+      const data = await safeFetch("/client/profile", { headers: { "Authorization": "Bearer " + token } })
+      if (!data) return
+      
+      localStorage.setItem("client_id", data.ID)
+      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
+      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+    }
+
+    async function submitTask(e) {
+      e.preventDefault();
+      const titleInput = document.getElementById("taskTitle");
+      
+      await fetch(`/api/projects/task`, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({ project_id: parseInt(projectId), title: titleInput.value })
+      });
+
+      titleInput.value = "";
+      loadClientWorkspace(); 
+    }
+
+    async function deleteTask(taskId) {
+        if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) return;
+
+        const res = await fetch(`/api/projects/task/${taskId}`, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (res.ok) {
+            loadClientWorkspace(); 
+        } else {
+            alert("Gagal menghapus tugas.");
+        }
+    }
+
+    async function editTaskPrompt(taskId, oldTitle) {
+        const newTitle = prompt("Edit judul tugas:", oldTitle);
+        
+        if (newTitle === null || newTitle.trim() === "" || newTitle === oldTitle) return;
+
+        const res = await fetch(`/api/projects/task/${taskId}/title`, {
+            method: "PATCH",
+            headers: { 
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title: newTitle.trim() })
+        });
+
+        if (res.ok) {
+            loadClientWorkspace(); 
+        } else {
+            alert("Gagal mengupdate tugas.");
+        }
+    }
+
+    async function requestRevision() {
+      if (!confirm("Tolak hasil kerja ini dan minta freelancer mengirimkan ulang?")) return;
+
+      const res = await fetch(`/api/projects/${projectId}/revision`, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      if (res.ok) {
+        alert("Proyek berhasil dibuka kembali untuk revisi.");
+        loadClientWorkspace(); 
+      } else {
+        alert("Gagal meminta pengiriman ulang.");
+      }
+    }
+
+    function logout() { localStorage.clear(); alert("Berhasil logout"); window.location.href = "/"; }
+    function goProfile() { window.location.href = "/client/profile/view" }
+    loadProfileMini();
+    loadClientWorkspace();
+  </script>
+</body>
+</html>

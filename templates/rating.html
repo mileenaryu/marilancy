@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Beri Penilaian</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+  <h2 class="text-xl font-bold mb-4 text-center">Beri Penilaian</h2>
+
+  <div class="flex justify-center mb-4" id="stars">
+    <i class="star text-3xl cursor-pointer text-gray-300" data-value="1">★</i>
+    <i class="star text-3xl cursor-pointer text-gray-300" data-value="2">★</i>
+    <i class="star text-3xl cursor-pointer text-gray-300" data-value="3">★</i>
+    <i class="star text-3xl cursor-pointer text-gray-300" data-value="4">★</i>
+    <i class="star text-3xl cursor-pointer text-gray-300" data-value="5">★</i>
+  </div>
+
+  <textarea id="komentar" placeholder="Tulis komentar..." class="w-full border p-3 rounded mb-4"></textarea>
+
+  <button onclick="submitRating()" class="w-full bg-teal-600 text-white py-2 rounded">
+    Kirim Penilaian
+  </button>
+</div>
+
+<script>
+let selectedRating = 0
+
+const stars = document.querySelectorAll(".star")
+
+stars.forEach(star => {
+  star.addEventListener("click", () => {
+    selectedRating = star.dataset.value
+
+    stars.forEach(s => s.classList.remove("text-yellow-400"))
+    stars.forEach(s => s.classList.add("text-gray-300"))
+
+    for (let i = 0; i < selectedRating; i++) {
+      stars[i].classList.remove("text-gray-300")
+      stars[i].classList.add("text-yellow-400")
+    }
+  })
+})
+
+async function submitRating() {
+  const komentar = document.getElementById("komentar").value
+  const token = localStorage.getItem("token")
+
+  const urlParams = new URLSearchParams(window.location.search)
+  const freelancer_id = urlParams.get("freelancer_id")
+  const project_id = urlParams.get("project_id")
+  if (selectedRating === 0) {
+    alert("Pilih rating dulu!")
+    return
+  }
+
+  const res = await fetch("/client/rating", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({
+    nilai: parseFloat(selectedRating),
+    komentar: komentar,
+    freelancer_id: parseInt(freelancer_id),
+    project_id: parseInt(project_id)
+    })
+  })
+
+  if (res.ok) {
+    alert("Rating berhasil dikirim!")
+    window.location.href = "/client/projects"
+  } else {
+    alert("Gagal kirim rating")
+  }
+}
+</script>
+
+</body>
+</html>

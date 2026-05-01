@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifikasi - MariLancy</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .custom-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+    }
+
+    .job-card-modern {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #f1f5f9;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.02);
+      transition: 0.3s;
+    }
+
+    .job-card-modern:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+      border-color: #e2e8f0;
+    }
+
+    .btn-teal {
+      background-color: #2b9c96;
+      color: white;
+    }
+    .btn-teal:hover {
+      background-color: #23827d;
+    }
+
+    .footer-dark {
+      background-color: #000000;
+      color: #e5e7eb;
+      padding: 60px 40px 30px 40px;
+      font-size: 14px;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .footer-col h4 {
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 12px;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .footer-col ul li:hover {
+      color: white;
+    }
+
+    .newsletter-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .newsletter-input {
+      background-color: transparent;
+      border: 1px solid #4b5563;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .newsletter-input:focus {
+      border-color: #2b9c96;
+    }
+
+    .newsletter-btn {
+      background-color: #2b9c96;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .newsletter-btn:hover {
+      background-color: #23827d;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      color: #6b7280;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="fixed top-0 left-0 w-full z-50 bg-black text-white px-8 py-4 flex justify-between items-center">
+    <div class="flex-1">
+      <a class="text-xl font-bold flex items-center gap-2" href="/freelancer">
+        <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
+      </a>
+    </div>
+
+    <div class="flex-1 flex justify-center gap-8 text-sm font-medium">
+      <a href="/freelancer" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Dashboard</a>
+      <a href="/freelancer/projects" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Proyek</a>
+      <a href="/freelancer/profile/view" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Lamaran</a>
+      <a href="#message" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Pesan</a>
+    </div>
+
+    <div class="flex-1 flex justify-end items-center gap-5 ">
+      <span id="userGreeting" class="text-sm font-medium"></span>
+      <div class="profile-box cursor-pointer" onclick="goProfile()">
+        <img id="profile_img"
+          src="https://ui-avatars.com/api/?name=User"
+          class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+      </div>
+      <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
+        Logout
+      </button>
+      <div class="relative cursor-pointer" onclick="goNotification()">
+        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
+        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">
+          0
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-black text-white text-center py-16 mb-8">
+    <h1 class="text-4xl font-bold">Notifikasi</h1>
+  </div>
+
+  <section class="max-w-4xl mx-auto px-4 pb-20">
+    <div id="notifList" class="flex flex-col gap-2">
+      <p class="text-gray-500 text-center py-10">Memuat notifikasi...</p>
+    </div>
+  </section>
+
+  <footer class="footer-dark">
+    <div class="footer-container">
+      <div class="footer-col">
+        <a class="text-xl font-bold flex items-center gap-2 text-white mb-6" href="#">
+          <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
+        </a>
+        <p class="text-gray-400 leading-relaxed max-w-xs">
+          MariLancy adalah platform freelance yang menghubungkan mahasiswa dan talenta pemula dengan klien untuk mendapatkan pengalaman kerja nyata serta membangun portofolio melalui proyek digital.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Tentang Kami</h4>
+        <ul>
+          <li>Tentang Platform</li>
+          <li>Tim Pengembang</li>
+          <li>Partners</li>
+          <li>Untuk Freelancer</li>
+          <li>Untuk Klien</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kategori Proyek</h4>
+        <ul>
+          <li>Desain Grafis</li>
+          <li>Web Development</li>
+          <li>Content Writing</li>
+          <li>Social Media</li>
+          <li>Video Editing</li>
+          <li>Data Entry</li>
+          <li>Digital Marketing</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Dapatkan Info Proyek Terbaru</h4>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Dapatkan update proyek terbaru dan kesempatan freelance langsung ke email kamu.
+        </p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Email Address" class="newsletter-input">
+          <button class="newsletter-btn">Kirim</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MariLancy. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-white transition">Kebijakan Privasi</a>
+        <a href="#" class="hover:text-white transition">Syarat & Ketentuan</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const token = localStorage.getItem("token")
+    const role = localStorage.getItem("role")
+
+    if (!token) {
+      alert("Silakan login dulu")
+      window.location.href = "/"
+    }
+
+    if (role !== "freelancer") {
+      alert("Akses ditolak (bukan freelancer)")
+      window.location.href = "/"
+    }
+
+    let globalJobs = []
+    let currentDisplayedJobs = []
+    let myApplications = []
+
+    async function safeFetch(url, options = {}) {
+      const res = await fetch(url, options)
+      if (res.status === 401) {
+        alert("Session habis")
+        localStorage.clear()
+        window.location.href = "/"
+        return null
+      }
+      if (res.status === 403) {
+        alert("Akses ditolak")
+        window.location.href = "/"
+        return null
+      }
+      return await res.json()
+    }
+
+    async function loadProfile() {
+      const profile = await safeFetch("/freelancer/profile", {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      })
+
+      if (!profile) return
+
+      const name = profile.nama || "User"
+      const shortName = name.split(' ')[0]
+      document.getElementById("userGreeting").innerText = `Hi, ${shortName}!`
+
+      document.getElementById("profile_img").src =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName)}&background=2b9c96&color=fff`
+    }
+
+    async function loadNotifications() {
+      try {
+        const res = await fetch("/freelancer/applications", {
+          headers: { "Authorization": "Bearer " + token }
+        })
+        const data = await res.json()
+
+        let html = ""
+
+        data.forEach(app => {
+          const job = app.job || {}
+
+          if (job.status === "dihapus") return;
+
+          let finalStatus = app.status;
+
+          if (app.status === "accepted") {
+              finalStatus = "accepted";
+          } else if (app.status === "rejected") {
+              finalStatus = "rejected";
+          } else if (app.status === "pending") {
+              if (job.status === "ditutup") {
+                  finalStatus = "ditolak (job ditutup)";
+              } else {
+                  finalStatus = "pending";
+              }
+          }
+
+          if (finalStatus === "pending" || finalStatus === "withdrawn") return;
+
+          const clientName =
+            job.client?.nama_client ||
+            job.client?.nama ||
+            job.client_name ||
+            "Klien";
+          
+          let title = "Status Diupdate"
+          let textDesc = "Ada pembaruan pada status lamaranmu."
+
+          if (finalStatus === "accepted") {
+            title = "Lamaran Diterima"
+            textDesc = `Selamat! Lamaran kamu untuk proyek <b>${job.judul || "-"}</b> telah diterima oleh ${clientName}.`
+          } 
+          else if (finalStatus.includes("ditolak") || finalStatus === "rejected") {
+            title = "Lamaran Belum Sesuai"
+            
+            // Berikan deskripsi spesifik kenapa ditolak
+            if (finalStatus === "ditolak (job ditutup)") {
+                textDesc = `Mohon maaf, klien telah menutup rekrutmen untuk proyek <b>${job.judul || "-"}</b>.`;
+            } else if (finalStatus === "ditolak (job dihapus)") {
+                textDesc = `Mohon maaf, proyek <b>${job.judul || "-"}</b> telah dihapus oleh klien.`;
+            } else {
+                textDesc = `Mohon maaf, lamaran kamu untuk proyek <b>${job.judul || "-"}</b> belum bisa dilanjutkan oleh ${clientName} saat ini.`;
+            }
+          } 
+
+          let timeLabel = getTimeLabel(app.updated_at || app.created_at)
+
+          html += `
+            <div onclick="openApplication(${job.id || 0}, ${app.id || 0})" class="job-card-modern cursor-pointer">
+              <div class="flex justify-between items-start mb-4">
+                <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${timeLabel}</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff" alt="Logo" class="w-12 h-12 rounded-full object-cover bg-gray-100">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-900">${title}</h3>
+                  <p class="text-sm text-gray-600 mt-1 leading-relaxed">${textDesc}</p>
+                </div>
+              </div>
+            </div>
+          `
+        })
+
+        document.getElementById("notifList").innerHTML = html || `<div class="text-center py-20 bg-white rounded-2xl border border-gray-100"><p class="text-gray-500 font-medium">Belum ada notifikasi saat ini.</p></div>`
+      
+      } catch (err) {
+        console.error(err)
+        document.getElementById("notifList").innerHTML = "<p class='text-red-500 text-center py-10'>Gagal memuat notifikasi.</p>"
+      }
+    }
+
+    async function loadNotificationCount() {
+      const res = await fetch("/freelancer/applications", {
+        headers: { "Authorization": "Bearer " + token }
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      
+      const updated = data.filter(app => {
+          const job = app.job || app.Job || {};
+          let isNotif = false;
+          
+          if (app.status === "accepted" || app.status === "rejected") {
+              isNotif = true;
+          } else if (app.status === "pending" && (job.status === "dihapus" || job.status === "ditutup")) {
+              isNotif = true;
+          }
+          return isNotif;
+      });
+      
+      const badge = document.getElementById("notifBadge")
+      if (updated.length > 0) {
+        badge.innerText = updated.length
+        badge.classList.remove("hidden")
+      }
+    }
+
+    function openApplication(jobId, appId) {
+      window.location.href = `/freelancer/profile/view?tab=history&job=${jobId}&app=${appId}`
+    }
+
+    function goHome() {
+      const currentRole = localStorage.getItem("role");
+
+      if (currentRole === "freelancer") {
+        window.location.href = "/freelancer";
+      } else if (currentRole === "client") {
+        window.location.href = "/client";
+      } else {
+        window.location.href = "/guest"; 
+      }
+    }
+    function getTimeLabel(date) {
+      if (!date) return "Baru"
+      const diff = Math.floor((new Date() - new Date(date)) / 60000)
+      if (diff < 1) return "Now"
+      if (diff < 60) return diff + " min ago"
+      if (diff < 1440) return Math.floor(diff / 60) + " jam ago"
+      if (diff < 2880) return "Kemarin"
+      return Math.floor(diff / 1440) + " hari lalu"
+    }
+
+    function logout() {
+      localStorage.clear()
+      window.location.href = "/"
+    }
+    
+    function goProfile() { window.location.href = "/freelancer/profile/view" }
+    function goNotification() {
+      window.location.href = "/freelancer/notification"
+    }
+
+    loadProfile()
+    loadNotifications()
+
+
+  </script>
+
+</body>
+</html>
