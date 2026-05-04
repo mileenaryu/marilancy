@@ -27,7 +27,7 @@ func GetFreelancers(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal ambil freelancer"})
 		return
 	}
-	c.JSON(http.StatusOK, users) 
+	c.JSON(http.StatusOK, users)
 }
 
 func GetClients(c *gin.Context) {
@@ -36,7 +36,7 @@ func GetClients(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal ambil client"})
 		return
 	}
-	c.JSON(http.StatusOK, clients) 
+	c.JSON(http.StatusOK, clients)
 }
 
 func DeleteFreelancer(c *gin.Context) {
