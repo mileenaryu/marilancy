@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"marilancy/config"
 	"marilancy/models"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,19 +63,36 @@ func UpdateFreelancerProfile(c *gin.Context) {
 	user.Skill = c.PostForm("skill")
 	user.WorkPre = c.PostForm("work_pre")
 
-	fmt.Sscanf(c.PostForm("age"), "%d", &user.Age)
-	fmt.Sscanf(c.PostForm("years_of_experience"), "%d", &user.YearsOfExperience)
+	var age, exp int
+	fmt.Sscanf(c.PostForm("age"), "%d", &age)
+	fmt.Sscanf(c.PostForm("years_of_experience"), "%d", &exp)
+
+	if age < 0 || exp < 0 {
+		c.JSON(400, gin.H{"error": "Umur dan Pengalaman tidak boleh bernilai minus!"})
+		return
+	}
+	user.Age = age
+	user.YearsOfExperience = exp
 
 	user.MonthlySalaryExp = c.PostForm("monthly_salary_exp")
 
 	file, err := c.FormFile("resume")
 	if err == nil {
+		if !strings.HasSuffix(strings.ToLower(file.Filename), ".pdf") {
+			c.JSON(400, gin.H{"error": "Resume wajib berupa file PDF!"})
+			return
+		}
 		path := "uploads/resume_" + file.Filename
 		c.SaveUploadedFile(file, path)
 		user.Resume = "/" + path
 	}
+
 	fileCert, err := c.FormFile("certificates")
 	if err == nil {
+		if !strings.HasSuffix(strings.ToLower(fileCert.Filename), ".pdf") {
+			c.JSON(400, gin.H{"error": "Sertifikat wajib berupa file PDF!"})
+			return
+		}
 		path := "uploads/cert_" + fileCert.Filename
 		c.SaveUploadedFile(fileCert, path)
 		user.Certificates = "/" + path

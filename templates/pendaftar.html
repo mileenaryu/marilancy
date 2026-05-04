@@ -77,22 +77,26 @@
     </div>
 
     <div class="flex-1 flex justify-center gap-8 text-sm font-medium">
-      <a href="/client" onclick="goHome()" class="text-gray-400 hover:text-white">Dashboard</a>
-      <a href="#projects" class="text-gray-400 hover:text-white">Proyek</a>
-      <a href="/client/profile/view" class="text-gray-400 hover:text-white">Lamaran</a>
-      <a href="#message" class="text-gray-400 hover:text-white">Pesan</a>
+      <a href="/client" onclick="setActive(this); goHome()" class="nav-link text-white pb-1">Dashboard</a>
+
+      <a href="/client#post-job" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Posting Job</a>
+
+      <a href="/client/projects" onclick="setActive(this)" class="text-white border-b-2 border-[#2b9c96] pb-1 font-semibold">Proyek</a>
+
+      <a href="#message" onclick="setActive(this)" class="nav-link text-gray-400 hover:text-white">Pesan</a>
     </div>
 
     <div class="flex-1 flex justify-end items-center gap-5 ">
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full object-cover" alt="User">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
       <div class="relative cursor-pointer" onclick="goNotification()">
         <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
+        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
       </div>
     </div>
   </nav>

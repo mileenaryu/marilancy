@@ -544,30 +544,35 @@
     }
 
     async function applyJob() {
-      if (!token) {
-        alert("Harap login sebagai Freelancer untuk melamar")
-        return
-      }
+          if (!token) {
+            alert("Harap login sebagai Freelancer untuk melamar")
+            return
+          }
 
-      const profile = await safeFetch("/freelancer/profile", {
-        headers: { "Authorization": "Bearer " + token }
-      })
-      if (!profile) return
-      if (!profile.resume || !profile.certificates) {
-        alert("Lengkapi resume & certificates pada profilmu terlebih dahulu!")
-        window.location.href = "/freelancer/profile/view"
-        return
-      }
+          const profile = await safeFetch("/freelancer/profile", {
+            headers: { "Authorization": "Bearer " + token }
+          })
+          if (!profile) return
+          
+          if (!profile.nama || !profile.gender || !profile.age || profile.age <= 0 || 
+              !profile.location || !profile.education_level || 
+              !profile.job_interest || !profile.skill || 
+              !profile.resume || !profile.certificates) {
+              
+            alert("Gagal melamar! Lengkapi semua data profil wajib (Nama, Gender, Umur, Lokasi, Pendidikan, Minat, Skill, serta PDF Resume & Sertifikat) terlebih dahulu!")
+            window.location.href = "/freelancer/profile/view" // Arahkan user ke halaman profil
+            return
+          }
 
-      const result = await safeFetch("/freelancer/apply", {
-        method: "POST",
-        headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-        body: JSON.stringify({ job_id: parseInt(id) })
-      })
+          const result = await safeFetch("/freelancer/apply", {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+            body: JSON.stringify({ job_id: parseInt(id) })
+          })
 
-      if (!result) return
-      alert("Berhasil melamar pekerjaan!")
-      loadDetail() 
+          if (!result) return
+          alert("Berhasil melamar pekerjaan!")
+          loadDetail() 
     }
 
     function goHome() {

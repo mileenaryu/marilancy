@@ -30,8 +30,12 @@ func ApplyJob(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Freelancer tidak ditemukan"})
 		return
 	}
-	if freelancer.Resume == "" || freelancer.Certificates == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Lengkapi resume & certificates dulu"})
+
+	if freelancer.Nama == "" || freelancer.Gender == "" || freelancer.Age <= 0 ||
+		freelancer.Location == "" || freelancer.EducationLevel == "" ||
+		freelancer.JobInterest == "" || freelancer.Skill == "" ||
+		freelancer.Resume == "" || freelancer.Certificates == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Gagal Apply! Pastikan profil lengkap (Nama, Umur, Lokasi, Pendidikan, Minat, Skill, serta PDF Resume & Sertifikat)."})
 		return
 	}
 
