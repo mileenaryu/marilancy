@@ -97,10 +97,6 @@
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
-      </div>
     </div>
   </nav>
 
@@ -359,9 +355,15 @@
       if (!data) return
       
       localStorage.setItem("client_id", data.ID)
-      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      const clientName = data.nama || data.nama_client || "Klien"
+      const firstName = clientName.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+
+      if (data.foto_profil && data.foto_profil !== "") {
+          document.getElementById("profile_img").src = data.foto_profil;
+      } else {
+          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+      }
     }
 
     async function createJob() {
@@ -386,19 +388,35 @@
 
       if(!data.judul || !data.kategori) { alert("Judul dan Kategori wajib diisi!"); return; }
 
-      const result = await safeFetch("/client/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-        body: JSON.stringify(data)
-      })
+      try {
+          const res = await fetch("/client/jobs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+            body: JSON.stringify(data)
+          })
 
-      if (!result) return
-      alert("Proyek berhasil diposting!")
-      
-      document.getElementById("judul").value = ""
-      document.getElementById("job_desc").value = ""
-      
-      loadJobs()
+          const result = await res.json()
+
+          if (!res.ok) {
+              alert(result.error || "Gagal mem-posting job.");
+              
+              if (result.error && result.error.includes("Profil belum lengkap")) {
+                  window.location.href = "/client/profile/view";
+              }
+              return;
+          }
+
+          alert("Proyek berhasil diposting!")
+
+          document.getElementById("judul").value = ""
+          document.getElementById("job_desc").value = ""
+          
+          loadJobs()
+
+      } catch (err) {
+          console.error(err)
+          alert("Terjadi kesalahan jaringan.")
+      }
     }
 
     function goHome() {
@@ -565,7 +583,6 @@
 
     function logout() { localStorage.clear(); alert("Berhasil logout"); window.location.href = "/"; }
     function goProfile() { window.location.href = "/client/profile/view" }
-    function goNotification() { alert("Notifikasi") }
 
     loadProfileMini().then(loadJobs)
 

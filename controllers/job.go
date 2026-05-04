@@ -64,6 +64,17 @@ func CreateJob(c *gin.Context) {
 		return
 	}
 
+	var client models.Client
+	if err := config.DB.First(&client, userID).Error; err != nil {
+		c.JSON(404, gin.H{"error": "Client tidak ditemukan"})
+		return
+	}
+
+	if client.NamaClient == "" || client.Kontak == "" || client.Lokasi == "" || client.JenisUsaha == "" {
+		c.JSON(400, gin.H{"error": "Profil belum lengkap! Harap lengkapi Profil Anda (Nama Perusahaan, Kontak, Lokasi, dan Jenis Usaha) sebelum mem-posting job."})
+		return
+	}
+
 	job.Judul = input.Judul
 	job.JobDesc = input.JobDesc
 	job.KebutuhanProyek = input.KebutuhanProyek
@@ -147,6 +158,7 @@ func GetJobs(c *gin.Context) {
 			"client": gin.H{
 				"id":          job.Client.ID,
 				"nama_client": job.Client.NamaClient,
+				"foto_profil": job.Client.FotoProfil,
 			},
 
 			"applications_count": job.ApplicationsCount,

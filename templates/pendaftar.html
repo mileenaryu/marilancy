@@ -94,10 +94,6 @@
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
-      </div>
     </div>
   </nav>
 
@@ -167,7 +163,12 @@
           if(profile && profile.nama_client) {
             const firstName = profile.nama_client.split(' ')[0]
             document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-            document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+            
+            if (profile.foto_profil && profile.foto_profil !== "") {
+                document.getElementById("profile_img").src = profile.foto_profil;
+            } else {
+                document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+            }
           }
         }
       } catch (err) {
@@ -317,7 +318,6 @@
       else window.location.href = "/guest"; 
     }
     function goProfile() { window.location.href = "/client/profile/view" }
-    function goNotification() { alert("Fitur Notifikasi Client sedang dalam pengembangan") }
     function logout() { localStorage.clear(); window.location.href = "/" }
 
     loadNavbarData()

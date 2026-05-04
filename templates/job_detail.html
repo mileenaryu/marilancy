@@ -105,36 +105,28 @@
 <body>
 
   <nav class="fixed top-0 left-0 w-full z-50 bg-black text-white px-8 py-4 flex justify-between items-center">
-    <div class="flex-1">
-      <a class="text-xl font-bold flex items-center gap-2" href="/freelancer">
-        <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
-      </a>
-    </div>
-
-    <div class="flex-1 flex justify-center gap-8 text-sm font-medium">
-      <a href="#" onclick="goHome()" class="text-white border-b-2 border-teal-500 pb-1">Dashboard</a>
-      <a href="#projects" class="text-gray-400 hover:text-white">Proyek</a>
-      <a href="/freelancer/profile/view" class="text-gray-400 hover:text-white">Lamaran</a>
-      <a href="#message" class="text-gray-400 hover:text-white">Pesan</a>
-    </div>
-
-    <div class="flex-1 flex justify-end items-center gap-5 ">
-      <span id="userGreeting" class="text-sm font-medium"></span>
-      <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img"
-          src="https://ui-avatars.com/api/?name=User"
-          class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+      <div class="flex-1">
+        <a id="logoLink" class="text-xl font-bold flex items-center gap-2" href="#">
+          <i class="ri-briefcase-4-line text-2xl"></i> MariLancy
+        </a>
       </div>
-      <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
-        Logout
-      </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">
-          0
-        </span>
+
+      <div id="navLinks" class="flex-1 flex justify-center gap-8 text-sm font-medium">
       </div>
-    </div>
+
+      <div class="flex-1 flex justify-end items-center gap-5 ">
+        <span id="userGreeting" class="text-sm font-medium"></span>
+        <div class="profile-box cursor-pointer" onclick="goProfile()">
+          <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+        </div>
+        <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
+          Logout
+        </button>
+        <div id="notificationBtn" class="relative cursor-pointer" onclick="goNotification()">
+          <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
+          <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
+        </div>
+      </div>
   </nav>
 
   <div class="bg-black text-white text-center py-20 mt-16 mb-12">
@@ -230,6 +222,40 @@
       if (diff < 1440) return Math.floor(diff / 60) + " jam ago"
       return Math.floor(diff / 1440) + " hari ago"
     }
+    function renderNavbar() {
+        const navLinks = document.getElementById("navLinks");
+        const logoLink = document.getElementById("logoLink");
+        const notificationBtn = document.getElementById("notificationBtn");
+
+        if (role === "client") {
+            if (notificationBtn) notificationBtn.classList.add("hidden");
+            
+            logoLink.href = "/client";
+            navLinks.innerHTML = `
+                <a href="/client" onclick="goHome()" class="nav-link text-gray-400 hover:text-white pb-1">Dashboard</a>
+                <a href="/client#post-job" class="nav-link text-gray-400 hover:text-white">Posting Job</a>
+                <a href="/client/projects" class="text-white border-b-2 border-teal-500 pb-1 font-semibold">Proyek</a>
+                <a href="#message" class="nav-link text-gray-400 hover:text-white">Pesan</a>
+            `;
+        } else if (role === "freelancer") {
+            if (notificationBtn) notificationBtn.classList.remove("hidden");
+            
+            logoLink.href = "/freelancer";
+            navLinks.innerHTML = `
+                <a href="#" onclick="goHome()" class="text-gray-400 hover:text-white pb-1">Dashboard</a>
+                <a href="#projects" class="text-white border-b-2 border-teal-500 pb-1 font-semibold">Proyek</a>
+                <a href="/freelancer/profile/view" class="text-gray-400 hover:text-white">Lamaran</a>
+                <a href="#message" class="text-gray-400 hover:text-white">Pesan</a>
+            `;
+        } else {
+            if (notificationBtn) notificationBtn.classList.add("hidden");
+            
+            logoLink.href = "/";
+            navLinks.innerHTML = `
+                <a href="/" class="text-gray-400 hover:text-white pb-1">Home</a>
+            `;
+        }
+    }
 
     async function loadDetail() {
       if (!id) {
@@ -273,6 +299,13 @@
             clientProfileUrl = `/lihatprofileclient.html?id=${job.client_id || job.client?.id || ''}`;
         }
 
+        const clientName = job.client?.nama_client || "Klien Anonim";
+        const clientPhoto = job.client?.foto_profil;
+        
+        const clientAvatar = (clientPhoto && clientPhoto !== "") 
+          ? clientPhoto 
+          : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+
         document.getElementById("jobDetail").innerHTML = `
           <div class="flex flex-col lg:flex-row gap-12 text-left">
             
@@ -285,7 +318,7 @@
                 
                 <div class="flex items-center gap-5 mb-6">
                   <a href="${clientProfileUrl}" class="cursor-pointer shrink-0">
-                    <img src="https://ui-avatars.com/api/?name=${job.client?.nama_client || 'C'}&background=2b9c96&color=fff" class="w-16 h-16 rounded-full object-cover bg-gray-100 hover:ring-2 hover:ring-teal-500 transition" alt="Logo">
+                    <img src="${clientAvatar}" class="w-16 h-16 rounded-full object-cover bg-gray-100 hover:ring-2 hover:ring-teal-500 transition" alt="Logo">
                   </a>
                   <div>
                     <h2 class="text-2xl font-bold text-gray-900">${job.judul}</h2>
@@ -560,7 +593,7 @@
               !profile.resume || !profile.certificates) {
               
             alert("Gagal melamar! Lengkapi semua data profil wajib (Nama, Gender, Umur, Lokasi, Pendidikan, Minat, Skill, serta PDF Resume & Sertifikat) terlebih dahulu!")
-            window.location.href = "/freelancer/profile/view" // Arahkan user ke halaman profil
+            window.location.href = "/freelancer/profile/view"
             return
           }
 
@@ -621,7 +654,11 @@
           const firstName = clientName.split(' ')[0];
           document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
 
-          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+          if (profile.foto_profil && profile.foto_profil !== "") {
+              document.getElementById("profile_img").src = profile.foto_profil;
+          } else {
+              document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+          }
         }
       }
     }
@@ -641,6 +678,7 @@
     function logout() { localStorage.clear(); window.location.href = "/" }
 
     loadDetail()
+    renderNavbar()
     if(token) loadNavbarData()
   </script>
 

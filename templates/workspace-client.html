@@ -97,10 +97,6 @@
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
-      </div>
     </div>
   </nav>
 
@@ -267,9 +263,15 @@
       if (!data) return
       
       localStorage.setItem("client_id", data.ID)
-      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      const clientName = data.nama || data.nama_client || "Klien"
+      const firstName = clientName.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+
+      if (data.foto_profil && data.foto_profil !== "") {
+          document.getElementById("profile_img").src = data.foto_profil;
+      } else {
+          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+      }
     }
 
     async function submitTask(e) {

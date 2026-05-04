@@ -5,6 +5,7 @@ import "time"
 type Client struct {
 	ID               uint      `gorm:"primaryKey"`
 	NamaClient       string    `gorm:"type:varchar(100)" json:"nama_client"`
+	FotoProfil       string    `json:"foto_profil"`
 	Role             string    `json:"role"`
 	Lokasi           string    `json:"lokasi"`
 	JumlahPegawai    int       `json:"jumlah_pegawai"`

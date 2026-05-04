@@ -578,8 +578,12 @@
       const shortName = name.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${shortName}!`
 
-      document.getElementById("profile_img").src =
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName)}&background=2b9c96&color=fff`
+      if (profile.foto_profil && profile.foto_profil !== "") {
+          document.getElementById("profile_img").src = profile.foto_profil;
+      } else {
+          document.getElementById("profile_img").src =
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName)}&background=2b9c96&color=fff`;
+      }
     }
 
     async function loadMyApplications() {
@@ -684,6 +688,14 @@
         const alreadyApplied = myApplications.some(app => app.job_id == job.id && app.status !== "withdrawn")
         const isHidden = index >= 5 ? "hidden extra-job" : ""
         
+        const clientObj = job.client || job.Client || {};
+        const clientName = clientObj.nama_client || clientObj.nama || "Klien Anonim";
+        const clientPhoto = clientObj.foto_profil || clientObj.FotoProfil;
+        console.log(`Cek Klien: ${clientName} | URL Foto:`, clientPhoto);
+        const clientAvatar = (clientPhoto && clientPhoto !== "") 
+          ? clientPhoto 
+          : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+
         html += `
         <div class="job-card-modern ${isHidden}">
           <div class="flex justify-between items-center mb-4">
@@ -694,7 +706,7 @@
           </div>
 
           <div class="flex items-center gap-4 mb-5">
-            <img src="https://ui-avatars.com/api/?name=${job.client?.nama_client || 'Client'}&background=2b9c96&color=fff" alt="Logo" class="w-12 h-12 rounded-full object-cover bg-gray-100">
+            <img src="${clientAvatar}" alt="Logo" class="w-12 h-12 rounded-full object-cover bg-gray-100">
             <div>
               <h3 class="font-bold text-lg text-gray-900">${job.judul}</h3>
               <p class="text-sm text-gray-500">${job.client?.nama_client || "Klien Anonim"}</p>

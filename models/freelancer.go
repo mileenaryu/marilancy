@@ -9,6 +9,7 @@ type Freelancer struct {
 	Password            string  `json:"password"`
 	Gender              string  `json:"gender"`
 	Age                 int     `json:"age"`
+	FotoProfil          string  `json:"foto_profil"`
 	Role                string  `json:"role"`
 	Location            string  `json:"location"`
 	EducationLevel      string  `json:"education_level"`

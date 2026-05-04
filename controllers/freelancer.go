@@ -63,6 +63,18 @@ func UpdateFreelancerProfile(c *gin.Context) {
 	user.Skill = c.PostForm("skill")
 	user.WorkPre = c.PostForm("work_pre")
 
+	fileFoto, err := c.FormFile("foto_profil")
+	if err == nil {
+		ext := strings.ToLower(fileFoto.Filename)
+		if !strings.HasSuffix(ext, ".jpg") && !strings.HasSuffix(ext, ".jpeg") && !strings.HasSuffix(ext, ".png") {
+			c.JSON(400, gin.H{"error": "Foto profil wajib berupa file JPG, JPEG, atau PNG!"})
+			return
+		}
+		path := fmt.Sprintf("uploads/foto_%d_%s", id, fileFoto.Filename)
+		c.SaveUploadedFile(fileFoto, path)
+		user.FotoProfil = "/" + path
+	}
+
 	var age, exp int
 	fmt.Sscanf(c.PostForm("age"), "%d", &age)
 	fmt.Sscanf(c.PostForm("years_of_experience"), "%d", &exp)

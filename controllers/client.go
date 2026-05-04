@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"marilancy/config"
@@ -41,7 +42,6 @@ func UpdateClientProfile(c *gin.Context) {
 		return
 	}
 
-
 	var input struct {
 		NamaClient       string `form:"nama_client"`
 		Lokasi           string `form:"lokasi"`
@@ -57,6 +57,10 @@ func UpdateClientProfile(c *gin.Context) {
 		return
 	}
 
+	if input.JumlahPegawai < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Jumlah pegawai tidak boleh kurang dari 0!"})
+		return
+	}
 
 	client.NamaClient = input.NamaClient
 	client.Lokasi = input.Lokasi
@@ -66,6 +70,23 @@ func UpdateClientProfile(c *gin.Context) {
 	client.Deskripsi = input.Deskripsi
 	client.KulturPerusahaan = input.KulturPerusahaan
 
+	fileFoto, err := c.FormFile("foto_profil")
+	if err == nil {
+		ext := strings.ToLower(filepath.Ext(fileFoto.Filename))
+		if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Foto profil wajib berupa file JPG, JPEG, atau PNG!"})
+			return
+		}
+
+		fileName := fmt.Sprintf("fotoclient_%d_%d%s", userID, time.Now().Unix(), ext)
+		savePath := filepath.Join("uploads", fileName)
+
+		if err := c.SaveUploadedFile(fileFoto, savePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan foto profil"})
+			return
+		}
+		client.FotoProfil = "/" + filepath.ToSlash(savePath)
+	}
 
 	file, err := c.FormFile("galeri")
 	if err == nil {
@@ -73,7 +94,6 @@ func UpdateClientProfile(c *gin.Context) {
 		fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(file.Filename))
 		savePath := filepath.Join("uploads", fileName)
 
-	
 		if err := c.SaveUploadedFile(file, savePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan gambar galeri"})
 			return
@@ -81,7 +101,6 @@ func UpdateClientProfile(c *gin.Context) {
 
 		client.Galeri = "/" + filepath.ToSlash(savePath)
 	}
-
 
 	if err := config.DB.Save(&client).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal update profil"})

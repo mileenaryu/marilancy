@@ -122,12 +122,6 @@
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">
-          0
-        </span>
-      </div>
     </div>
   </nav>
 
@@ -239,11 +233,15 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="col-span-1 md:col-span-2">
+          <label class="text-sm font-semibold text-gray-700 block mb-1">Foto Profil (JPG/PNG)</label>
+          <input type="file" id="foto_profil" accept="image/png, image/jpeg, image/jpg" class="input-form mt-1 text-xs">
+        </div>
         <div><label class="text-sm font-semibold text-gray-700">Nama Perusahaan/Klien</label><input id="nama" class="input-form mt-1"></div>
         <div><label class="text-sm font-semibold text-gray-700">Email Akun (Readonly)</label><input id="email" class="input-form mt-1 bg-gray-200 cursor-not-allowed" disabled></div>
         
         <div><label class="text-sm font-semibold text-gray-700">Jenis Usaha</label><input id="jenis_usaha" class="input-form mt-1" placeholder="Misal: F&B, Agency, Retail"></div>
-        <div><label class="text-sm font-semibold text-gray-700">Jumlah Pegawai</label><input id="jumlah_pegawai" type="number" class="input-form mt-1"></div>
+        <div><label class="text-sm font-semibold text-gray-700">Jumlah Pegawai</label><input id="jumlah_pegawai" type="number" min="0" class="input-form mt-1"></div>
 
         <div>
           <label class="text-sm font-semibold text-gray-700">Lokasi / Kota</label>
@@ -383,7 +381,10 @@
         document.getElementById("heroName").innerText = clientName
         document.getElementById("userGreeting").innerText = `Hi, ${shortName}!`
         
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`
+        let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        if (data.foto_profil && data.foto_profil !== "") {
+            avatarUrl = data.foto_profil;
+        }
         document.getElementById("heroAvatar").src = avatarUrl
         document.getElementById("profile_img").src = avatarUrl
 
@@ -446,6 +447,19 @@
       if (isNaN(jmlPegawai)) {
         jmlPegawai = 0;
       }
+      if (jmlPegawai < 0) {
+        alert("Jumlah pegawai tidak boleh bernilai minus!");
+        return;
+      }
+
+      const fotoFile = document.getElementById("foto_profil").files[0];
+      if (fotoFile) {
+          const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+          if (!validTypes.includes(fotoFile.type)) {
+              alert("Foto Profil harus berformat JPG atau PNG!");
+              return;
+          }
+      }
 
       const formData = new FormData()
 
@@ -459,6 +473,9 @@
       formData.append("deskripsi", document.getElementById("deskripsi").value)
       formData.append("kultur_perusahaan", document.getElementById("kultur_perusahaan").value)
 
+      if (fotoFile) {
+          formData.append("foto_profil", fotoFile);
+      }
       const galeriFile = document.getElementById("galeri").files[0];
       if (galeriFile) {
         formData.append("galeri", galeriFile);
@@ -498,7 +515,6 @@
     }
 
     function goProfile() { window.location.href = "/client/profile/view" }
-    function goNotification() { window.location.href = "/client/notification" }
     function logout() { localStorage.clear(); window.location.href = "/"; }
 
     loadProfile()

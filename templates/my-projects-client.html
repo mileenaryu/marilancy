@@ -97,10 +97,6 @@
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
       </button>
-      <div class="relative cursor-pointer" onclick="goNotification()">
-        <i class="ri-notification-3-fill text-2xl text-yellow-500"></i>
-        <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0 rounded-full hidden">0</span>
-      </div>
     </div>
   </nav>
 
@@ -158,7 +154,10 @@
             const isCompleted = p.status === 'completed';
             const badgeText = isCompleted ? 'Proyek Selesai' : 'Sedang dikerjakan';
             const badgeClass = isCompleted ? 'bg-teal-50 text-[#2b9c96]' : 'bg-blue-50 text-blue-600';
-            const barColor = isCompleted ? '#2b9c96' : '#3b82f6'; 
+            const barColor = isCompleted ? '#2b9c96' : '#3b82f6';
+            const avatarFreelancer = (p.freelancer.foto_profil && p.freelancer.foto_profil !== "") 
+                ? p.freelancer.foto_profil 
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.freelancer.nama)}&background=random&color=fff`;
 
             let actionButtons = `
               <div class="flex flex-col gap-2 items-end">
@@ -167,9 +166,7 @@
             `;
 
             if (isCompleted) {
-
                 let sudahRating = false;
-
                 try {
                     const resRating = await fetch(
                         `/client/check-rating?freelancer_id=${p.freelancer.ID}&project_id=${p.id}`,
@@ -206,7 +203,7 @@
             } else if (p.progress === 100) {
                  actionButtons = `
                   <div class="flex flex-col gap-2 items-end">
-                     <a href="/client/workspace?project_id=${p.id}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2.5 rounded-lg text-xs font-bold shadow-sm transition">Menunggu Penyerahan File</a>
+                      <a href="/client/workspace?project_id=${p.id}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2.5 rounded-lg text-xs font-bold shadow-sm transition">Menunggu Penyerahan File</a>
                   </div>
                 `;
             }
@@ -216,14 +213,15 @@
                  <span class="absolute top-6 left-6 text-[10px] font-bold px-3 py-1 rounded-full ${badgeClass}">${badgeText}</span>
                  
                  <div class="flex flex-col md:flex-row gap-5 mt-10">
-                    <img src="https://ui-avatars.com/api/?name=${p.freelancer.nama}&background=random&color=fff" class="w-14 h-14 rounded-full object-cover">
+                    <!-- UBAH BAGIAN IMG SRC MENJADI VARIABEL avatarFreelancer -->
+                    <img src="${avatarFreelancer}" class="w-14 h-14 rounded-full object-cover">
                     <div class="flex-1">
                        <h3 class="text-xl font-bold text-gray-900">${p.job.judul}</h3>
                        <p class="text-xs text-gray-500 mt-0.5">Dikerjakan oleh: <span class="font-bold text-gray-700">${p.freelancer.nama}</span></p>
                        
                        <div class="flex items-center gap-3 mt-4 pr-0 md:pr-32">
                           <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
-                             <div class="h-2.5 rounded-full" style="width: ${p.progress}%; background-color: ${barColor};"></div>
+                              <div class="h-2.5 rounded-full" style="width: ${p.progress}%; background-color: ${barColor};"></div>
                           </div>
                           <span class="text-xs font-bold text-gray-600">${p.progress}%</span>
                        </div>
@@ -250,9 +248,15 @@
       if (!data) return
       
       localStorage.setItem("client_id", data.ID)
-      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      const clientName = data.nama || data.nama_client || "Klien"
+      const firstName = clientName.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+
+      if (data.foto_profil && data.foto_profil !== "") {
+          document.getElementById("profile_img").src = data.foto_profil;
+      } else {
+          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+      }
     }
     function logout() { localStorage.clear(); alert("Berhasil logout"); window.location.href = "/"; }
     function goProfile() { window.location.href = "/client/profile/view" }

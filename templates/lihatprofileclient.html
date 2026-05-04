@@ -53,6 +53,19 @@
     .btn-teal:hover {
       background-color: #23827d;
     }
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 6px solid white;
+      object-fit: cover;
+      position: absolute;
+      bottom: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f1f5f9;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
     .footer-dark {
       background-color: #000000;
@@ -245,7 +258,11 @@
             const fullName = profile.nama || "User";
             const firstName = fullName.split(' ')[0];
             document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
-            document.getElementById("profile_img").src = profile.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+            if (profile.foto_profil && profile.foto_profil !== "") {
+                document.getElementById("profile_img").src = profile.foto_profil;
+            } else {
+                document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+            }
           }
 
           const appRes = await fetch("/freelancer/applications", { headers: { "Authorization": "Bearer " + token } });
@@ -317,7 +334,11 @@
         const clientName = data.nama_client || "Klien";
 
         document.getElementById("heroName").innerText = clientName;
-        document.getElementById("heroAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        if (data.foto_profil && data.foto_profil !== "") {
+            document.getElementById("heroAvatar").src = data.foto_profil;
+        } else {
+            document.getElementById("heroAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        }
 
         document.getElementById("viewNama").innerText = clientName;
         document.getElementById("viewJenisUsaha").innerText = data.jenis_usaha || "-";
