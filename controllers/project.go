@@ -21,7 +21,6 @@ func GetProjectDetail(c *gin.Context) {
 		return
 	}
 
-
 	totalTasks := len(project.Tasks)
 	completedTasks := 0
 	for _, task := range project.Tasks {
@@ -69,7 +68,7 @@ func CreateTask(c *gin.Context) {
 func UpdateTaskStatus(c *gin.Context) {
 	taskID := c.Param("task_id")
 	var input struct {
-		Status string `json:"status"` 
+		Status string `json:"status"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -137,7 +136,6 @@ func CompleteProject(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Proyek berhasil diselesaikan"})
 }
 
-
 func RequestRevision(c *gin.Context) {
 	projectID := c.Param("id")
 
@@ -148,7 +146,6 @@ func RequestRevision(c *gin.Context) {
 	}
 
 	project.Status = "active"
-
 
 	if err := config.DB.Save(&project).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal meminta pengiriman ulang"})
@@ -198,7 +195,6 @@ func GetMyProjects(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-
 func GetClientProjects(c *gin.Context) {
 	userID, ok := getUserID(c)
 	if !ok {
@@ -211,7 +207,6 @@ func GetClientProjects(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data proyek"})
 		return
 	}
-
 
 	var result []gin.H
 	for _, p := range projects {
@@ -232,7 +227,7 @@ func GetClientProjects(c *gin.Context) {
 			"id":         p.ID,
 			"status":     p.Status,
 			"job":        p.Job,
-			"freelancer": p.Freelancer, 
+			"freelancer": p.Freelancer,
 			"progress":   progress,
 		})
 	}
@@ -250,7 +245,6 @@ func DeleteTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Task berhasil dihapus"})
 }
-
 
 func UpdateTaskTitle(c *gin.Context) {
 	taskID := c.Param("task_id")
