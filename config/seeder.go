@@ -11,7 +11,7 @@ func SeedAdmin() {
 
 	var admin models.Admin
 
-	err := DB.Where("email = ?", "admin@marilancy.com").First(&admin).Error
+	err := DB.Where("email = ?", "admin@gmail.com").First(&admin).Error
 
 	if err == nil {
 		fmt.Println("✅ Admin sudah ada, skip seeding")
@@ -22,7 +22,7 @@ func SeedAdmin() {
 
 	admin = models.Admin{
 		NamaAdmin: "Super Admin",
-		Email:     "admin@marilancy.com",
+		Email:     "admin@gmail.com",
 		Password:  string(hash),
 		Role:      "admin",
 	}
@@ -33,6 +33,6 @@ func SeedAdmin() {
 	}
 
 	fmt.Println("🔥 Admin berhasil dibuat!")
-	fmt.Println("📧 Email: admin@marilancy.com")
+	fmt.Println("📧 Email: admin@gmail.com")
 	fmt.Println("🔑 Password: admin123")
 }
