@@ -169,7 +169,8 @@
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
         <img id="profile_img"
-          src="https://ui-avatars.com/api/?name=User"
+          src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff"
+          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';"
           class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
@@ -184,7 +185,7 @@
     </div>
   </nav>
 
-  <div class="max-w-7xl mx-auto px-4 py-10">
+  <div class="max-w-7xl mx-auto px-4 py-10 mt-16">
     
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
@@ -394,32 +395,7 @@
           btnComplete.disabled = true;
       }
     }
-    function setActive(el) {
-      const links = document.querySelectorAll('.nav-link');
 
-      links.forEach(link => {
-        link.classList.remove('border-b-2', 'border-teal-500', 'text-white');
-        link.classList.add('text-gray-400');
-      });
-
-      el.classList.remove('text-gray-400');
-      el.classList.add('text-white', 'border-b-2', 'border-teal-500');
-    }
-
-    function setActiveByURL() {
-      const links = document.querySelectorAll('.nav-link');
-      const currentPath = window.location.pathname;
-
-      links.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('border-b-2', 'border-teal-500', 'text-white');
-          link.classList.remove('text-gray-400');
-        } else {
-          link.classList.remove('border-b-2', 'border-teal-500', 'text-white');
-          link.classList.add('text-gray-400');
-        }
-      });
-    }
     async function loadUserProfile() {
         try {
             const role = localStorage.getItem("role");
@@ -438,10 +414,19 @@
 
             document.getElementById("userGreeting").innerText = "Hi, " + firstName + "!";
 
-            const profileImgUrl = data.foto_profil || data.galeri || 
-                                `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff&bold=true`;
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+            const profileImgElement = document.getElementById("profile_img");
+            const profileImgUrl = data.foto_profil || data.galeri;
 
-            document.getElementById("profile_img").src = profileImgUrl;
+            if (profileImgUrl && profileImgUrl !== "") {
+                profileImgElement.src = profileImgUrl;
+                profileImgElement.onerror = function() {
+                    this.onerror = null;
+                    this.src = fallbackAvatar;
+                };
+            } else {
+                profileImgElement.src = fallbackAvatar;
+            }
 
         } catch (err) {
             console.error("Error load profile:", err);
@@ -508,6 +493,7 @@
         document.getElementById('btnList').classList.replace('text-white', 'text-gray-700');
       }
     }
+    
     async function updatePriorityAPI(taskId, newPriority) {
         if (isProjectCompleted) return;
         
@@ -557,6 +543,7 @@
       const newStatus = isChecked ? 'done' : 'todo';
       updateStatusAPI(taskId, newStatus);
     }
+    
     function goHome() {
       const currentRole = localStorage.getItem("role");
       if (currentRole === "freelancer") {
@@ -622,6 +609,20 @@
       }
     }
     
+    function goProfile() {
+      const currentRole = localStorage.getItem("role");
+      if (currentRole === "freelancer") window.location.href = "/freelancer/profile/view"
+      else if (currentRole === "client") window.location.href = "/client/profile/view"
+    }
+
+    function goNotification() {
+      const currentRole = localStorage.getItem("role");
+      if (currentRole === "freelancer") window.location.href = "/freelancer/notification"
+      else if (currentRole === "client") window.location.href = "/client/notification"
+    }
+    
+    function logout() { localStorage.clear(); window.location.href = "/" }
+
     loadUserProfile()
     loadProjectData();
   </script>

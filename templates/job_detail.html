@@ -304,9 +304,8 @@
         const clientName = job.client?.nama_client || "Klien Anonim";
         const clientPhoto = job.client?.foto_profil;
         
-        const clientAvatar = (clientPhoto && clientPhoto !== "") 
-          ? clientPhoto 
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const clientAvatar = (clientPhoto && clientPhoto !== "") ? clientPhoto : fallbackAvatar;
 
         document.getElementById("jobDetail").innerHTML = `
           <div class="flex flex-col lg:flex-row gap-12 text-left">
@@ -320,12 +319,12 @@
                 
                 <div class="flex items-center gap-5 mb-6">
                   <a href="${clientProfileUrl}" class="cursor-pointer shrink-0">
-                    <img src="${clientAvatar}" class="w-16 h-16 rounded-full object-cover bg-gray-100 hover:ring-2 hover:ring-teal-500 transition" alt="Logo">
+                    <img src="${clientAvatar}" onerror="this.onerror=null; this.src='${fallbackAvatar}';" class="w-16 h-16 rounded-full object-cover bg-gray-100 hover:ring-2 hover:ring-teal-500 transition" alt="Logo">
                   </a>
                   <div>
                     <h2 class="text-2xl font-bold text-gray-900">${displayJudul}</h2>
                     <a href="${clientProfileUrl}" class="text-sm text-teal-600 hover:underline hover:text-teal-800 mt-1 block font-medium">
-                      ${job.client?.nama_client || "Klien Anonim"} <i class="ri-external-link-line text-xs ml-1"></i>
+                      ${clientName} <i class="ri-external-link-line text-xs ml-1"></i>
                     </a>
                   </div>
                 </div>
@@ -641,10 +640,18 @@
           const firstName = fullName.split(' ')[0];
           document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
           
+          const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+          const profileImgElement = document.getElementById("profile_img");
+          
           if(profile.foto_profil) {
-            document.getElementById("profile_img").src = profile.foto_profil;
+            profileImgElement.src = profile.foto_profil;
+            // Handle error ketika foto tidak dapat diakses
+            profileImgElement.onerror = function() {
+                this.onerror = null;
+                this.src = fallbackAvatar;
+            };
           } else {
-            document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+            profileImgElement.src = fallbackAvatar;
           }
         }
 
@@ -685,10 +692,18 @@
           const firstName = clientName.split(' ')[0];
           document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
 
+          const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+          const profileImgElement = document.getElementById("profile_img");
+
           if (profile.foto_profil && profile.foto_profil !== "") {
-              document.getElementById("profile_img").src = profile.foto_profil;
+              profileImgElement.src = profile.foto_profil;
+              // Handle error ketika foto tidak dapat diakses
+              profileImgElement.onerror = function() {
+                  this.onerror = null; 
+                  this.src = fallbackAvatar;
+              };
           } else {
-              document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+              profileImgElement.src = fallbackAvatar;
           }
         }
       }

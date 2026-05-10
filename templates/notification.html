@@ -163,7 +163,8 @@
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
         <img id="profile_img"
-          src="https://ui-avatars.com/api/?name=User"
+          src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff"
+          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';"
           class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
@@ -178,7 +179,7 @@
     </div>
   </nav>
 
-  <div class="bg-black text-white text-center py-16 mb-8">
+  <div class="bg-black text-white text-center py-16 mb-8 mt-16">
     <h1 class="text-4xl font-bold">Notifikasi</h1>
   </div>
 
@@ -302,11 +303,17 @@
       const shortName = name.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${shortName}!`
 
+      const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName)}&background=2b9c96&color=fff`;
+      const profileImgElement = document.getElementById("profile_img");
+
       if (profile.foto_profil && profile.foto_profil !== "") {
-          document.getElementById("profile_img").src = profile.foto_profil;
+          profileImgElement.src = profile.foto_profil;
+          profileImgElement.onerror = function() {
+              this.onerror = null;
+              this.src = fallbackAvatar;
+          };
       } else {
-          document.getElementById("profile_img").src =
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName)}&background=2b9c96&color=fff`;
+          profileImgElement.src = fallbackAvatar;
       }
     }
 
@@ -348,9 +355,10 @@
             "Klien";
 
           const clientPhoto = job.client?.foto_profil;
+          const fallbackClientAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
           const clientAvatar = (clientPhoto && clientPhoto !== "") 
             ? clientPhoto 
-            : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+            : fallbackClientAvatar;
           
           let title = "Status Diupdate"
           let textDesc = "Ada pembaruan pada status lamaranmu."
@@ -385,7 +393,7 @@
                 ${dotIndicator}
               </div>
               <div class="flex items-center gap-4">
-                <img src="${clientAvatar}" alt="Logo" class="w-12 h-12 rounded-full object-cover bg-gray-100">
+                <img src="${clientAvatar}" onerror="this.onerror=null; this.src='${fallbackClientAvatar}';" alt="Logo" class="w-12 h-12 rounded-full object-cover bg-gray-100">
                 <div>
                   <h3 class="font-bold text-lg text-gray-900">${title}</h3>
                   <p class="text-sm text-gray-600 mt-1 leading-relaxed">${textDesc}</p>

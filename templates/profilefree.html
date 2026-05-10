@@ -212,7 +212,8 @@
         <span id="navUserName" class="text-sm font-medium">Hi, Freelancer!</span>
         <img id="navAvatar"
           src="https://ui-avatars.com/api/?name=F&background=2b9c96&color=fff"
-          class="w-10 h-10 rounded-full object-cover" alt="User">
+          class="w-10 h-10 rounded-full object-cover" alt="User"
+          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';">
       </div>
       
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
@@ -231,7 +232,7 @@
 
   <div class="bg-black text-white text-center pt-32 pb-24 relative mt-16">
     <h1 class="text-4xl font-bold tracking-wide" id="heroName">Nama Freelancer</h1>
-    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=User&background=random&color=fff" class="profile-avatar" alt="Profile Picture">
+    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" class="profile-avatar" alt="Profile Picture" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';">
   </div>
 
   <div class="max-w-6xl mx-auto px-4 mt-28 pb-20">
@@ -610,6 +611,7 @@
         window.location.href = "/guest"; 
       }
     }
+    
     async function loadProfile() {
       const t = checkAuth()
       if (!t) return
@@ -628,9 +630,25 @@
         document.getElementById("navUserName").innerText = `Hi, ${firstName}!`
         document.getElementById("viewNamaCard").innerText = fullName
 
-        const avatarUrl = data.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`
-        document.getElementById("heroAvatar").src = avatarUrl
-        document.getElementById("navAvatar").src = avatarUrl
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+        const heroAvatarElement = document.getElementById("heroAvatar");
+        const navAvatarElement = document.getElementById("navAvatar");
+
+        if (data.foto_profil && data.foto_profil !== "") {
+            heroAvatarElement.src = data.foto_profil;
+            navAvatarElement.src = data.foto_profil;
+            
+            const handleError = function() {
+                this.onerror = null;
+                this.src = fallbackAvatar;
+            };
+            
+            heroAvatarElement.onerror = handleError;
+            navAvatarElement.onerror = handleError;
+        } else {
+            heroAvatarElement.src = fallbackAvatar;
+            navAvatarElement.src = fallbackAvatar;
+        }
 
         document.getElementById("viewBio").innerText = data.bio || "Belum ada deskripsi tentang saya."
         document.getElementById("viewKategori").innerText = data.job_interest || "-"

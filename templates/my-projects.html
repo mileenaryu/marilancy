@@ -438,7 +438,18 @@ const firstName = (profile.nama || "Freelancer").split(' ')[0];
 
 document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
 
-document.getElementById("profile_img").src = profile.foto_profil || `https://ui-avatars.com/api/?name=${firstName}&background=2b9c96&color=fff`;
+const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+const profileImgElement = document.getElementById("profile_img");
+
+if (profile.foto_profil && profile.foto_profil !== "") {
+    profileImgElement.src = profile.foto_profil;
+    profileImgElement.onerror = function() {
+        this.onerror = null;
+        this.src = fallbackAvatar;
+    };
+} else {
+    profileImgElement.src = fallbackAvatar;
+}
 
 }
 
@@ -479,9 +490,8 @@ projects.forEach(p => {
         const clientName = p.client?.nama_client || "Klien Anonim";
         const clientPhoto = p.client?.foto_profil;
         
-        const clientAvatar = (clientPhoto && clientPhoto !== "") 
-          ? clientPhoto 
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const fallbackClientAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const clientAvatar = (clientPhoto && clientPhoto !== "") ? clientPhoto : fallbackClientAvatar;
 
         let actionButtons = `
           <div class="flex flex-col gap-2 items-end">
@@ -518,7 +528,7 @@ projects.forEach(p => {
 
             <div class="flex flex-col md:flex-row gap-5 mt-10">
               <a href="/lihatprofileclient.html?id=${p.client?.ID || p.client?.id || p.ClientID || p.client_id || ''}" class="cursor-pointer shrink-0 hover:opacity-80 transition">
-                <img src="${clientAvatar}" class="w-14 h-14 rounded-full object-cover border border-gray-100">
+                <img src="${clientAvatar}" onerror="this.onerror=null; this.src='${fallbackClientAvatar}';" class="w-14 h-14 rounded-full object-cover border border-gray-100">
               </a>
               <div class="flex-1">
                 <h3 class="text-xl font-bold text-gray-900">${displayJudul}</h3>
