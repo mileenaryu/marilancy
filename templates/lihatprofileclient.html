@@ -176,7 +176,8 @@
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
         <img id="profile_img"
-          src="https://ui-avatars.com/api/?name=User"
+          src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff"
+          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';"
           class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
@@ -193,7 +194,7 @@
 
   <div class="bg-black text-white text-center pt-32 pb-24 relative mt-16">
     <h1 class="text-4xl font-bold tracking-wide" id="heroName">Memuat...</h1>
-    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=Loading&background=2b9c96&color=fff" class="profile-avatar" alt="Profile Picture">
+    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=Loading&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Client&background=2b9c96&color=fff';" class="profile-avatar" alt="Profile Picture">
   </div>
 
   <div class="max-w-6xl mx-auto px-4 mt-28 pb-20">
@@ -263,10 +264,17 @@
             const firstName = fullName.split(' ')[0];
             document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
             
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+            const profileImgElement = document.getElementById("profile_img");
+            
             if (profile.foto_profil && profile.foto_profil !== "") {
-                document.getElementById("profile_img").src = profile.foto_profil;
+                profileImgElement.src = profile.foto_profil;
+                profileImgElement.onerror = function() {
+                    this.onerror = null;
+                    this.src = fallbackAvatar;
+                };
             } else {
-                document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
+                profileImgElement.src = fallbackAvatar;
             }
           }
 
@@ -308,10 +316,17 @@
             const firstName = clientName.split(' ')[0];
             document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
             
+            const fallbackAvatarClient = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+            const profileImgElement = document.getElementById("profile_img");
+            
             if (profile.foto_profil && profile.foto_profil !== "") {
-                document.getElementById("profile_img").src = profile.foto_profil;
+                profileImgElement.src = profile.foto_profil;
+                profileImgElement.onerror = function() {
+                    this.onerror = null;
+                    this.src = fallbackAvatarClient;
+                };
             } else {
-                document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+                profileImgElement.src = fallbackAvatarClient;
             }
           }
         }
@@ -319,6 +334,7 @@
         console.error("Gagal meload data navbar:", err);
       }
     }
+    
     function setActive(el) {
       const links = document.querySelectorAll('.nav-link');
 
@@ -365,10 +381,19 @@
         const clientName = data.nama_client || "Klien";
 
         document.getElementById("heroName").innerText = clientName;
+        
+        // Penambahan handler fallback via JS
+        const fallbackHeroAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const heroAvatarElement = document.getElementById("heroAvatar");
+        
         if (data.foto_profil && data.foto_profil !== "") {
-            document.getElementById("heroAvatar").src = data.foto_profil;
+            heroAvatarElement.src = data.foto_profil;
+            heroAvatarElement.onerror = function() {
+                this.onerror = null;
+                this.src = fallbackHeroAvatar;
+            };
         } else {
-            document.getElementById("heroAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+            heroAvatarElement.src = fallbackHeroAvatar;
         }
 
         document.getElementById("viewNama").innerText = clientName;

@@ -92,7 +92,7 @@
     <div class="flex-1 flex justify-end items-center gap-5 ">
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
@@ -126,6 +126,7 @@
       if (res.status === 403) { alert("Akses ditolak"); window.location.href = "/"; return null; }
       try { return await res.json() } catch { return null }
     }
+    
     async function loadClientProjects() {
       if (!token) { window.location.href = "/"; return; }
 
@@ -155,9 +156,11 @@
             const badgeText = isCompleted ? 'Proyek Selesai' : 'Sedang dikerjakan';
             const badgeClass = isCompleted ? 'bg-teal-50 text-[#2b9c96]' : 'bg-blue-50 text-blue-600';
             const barColor = isCompleted ? '#2b9c96' : '#3b82f6';
+            
+            const fallbackFreelancerAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.freelancer.nama)}&background=2b9c96&color=fff`;
             const avatarFreelancer = (p.freelancer.foto_profil && p.freelancer.foto_profil !== "") 
                 ? p.freelancer.foto_profil 
-                : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.freelancer.nama)}&background=random&color=fff`;
+                : fallbackFreelancerAvatar;
 
             const displayJudul = p.job.job_no ? `${p.job.judul || "-"} <span class="text-sm font-normal text-gray-500 ml-2">(${p.job.job_no})</span>` : (p.job.judul || "-");
 
@@ -215,7 +218,7 @@
                  <span class="absolute top-6 left-6 text-[10px] font-bold px-3 py-1 rounded-full ${badgeClass}">${badgeText}</span>
                  
                  <div class="flex flex-col md:flex-row gap-5 mt-10">
-                    <img src="${avatarFreelancer}" class="w-14 h-14 rounded-full object-cover">
+                    <img src="${avatarFreelancer}" onerror="this.onerror=null; this.src='${fallbackFreelancerAvatar}';" class="w-14 h-14 rounded-full object-cover">
                     <div class="flex-1">
                        <h3 class="text-xl font-bold text-gray-900">${displayJudul}</h3>
                        <p class="text-xs text-gray-500 mt-0.5">Dikerjakan oleh: <span class="font-bold text-gray-700">${p.freelancer.nama}</span></p>
@@ -244,6 +247,7 @@
         container.innerHTML = `<p class="text-center text-red-500 py-10">Gagal memuat data. Pastikan Anda sudah login sebagai Klien.</p>`;
       }
     }
+    
     async function loadProfileMini() {
       const data = await safeFetch("/client/profile", { headers: { "Authorization": "Bearer " + token } })
       if (!data) return
@@ -253,14 +257,23 @@
       const firstName = clientName.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
 
+      const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+      const profileImgElement = document.getElementById("profile_img");
+
       if (data.foto_profil && data.foto_profil !== "") {
-          document.getElementById("profile_img").src = data.foto_profil;
+          profileImgElement.src = data.foto_profil;
+          profileImgElement.onerror = function() {
+              this.onerror = null;
+              this.src = fallbackAvatar;
+          };
       } else {
-          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+          profileImgElement.src = fallbackAvatar;
       }
     }
+    
     function logout() { localStorage.clear(); alert("Berhasil logout"); window.location.href = "/"; }
     function goProfile() { window.location.href = "/client/profile/view" }
+    
     loadProfileMini();
     loadClientProjects();
   </script>

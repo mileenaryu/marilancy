@@ -89,7 +89,7 @@
     <div class="flex-1 flex justify-end items-center gap-5 ">
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
@@ -164,10 +164,17 @@
             const firstName = profile.nama_client.split(' ')[0]
             document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
             
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+            const profileImgElement = document.getElementById("profile_img");
+            
             if (profile.foto_profil && profile.foto_profil !== "") {
-                document.getElementById("profile_img").src = profile.foto_profil;
+                profileImgElement.src = profile.foto_profil;
+                profileImgElement.onerror = function() {
+                    this.onerror = null;
+                    this.src = fallbackAvatar;
+                };
             } else {
-                document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+                profileImgElement.src = fallbackAvatar;
             }
           }
         }
@@ -217,7 +224,9 @@
 
         data.forEach((app, index) => {
           const f = app.freelancer || {}
-          const avatarUrl = f.foto_profil || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.nama || 'A')}&background=random&color=fff`
+        
+          const fallbackApplicantAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(f.nama || 'A')}&background=2b9c96&color=fff`;
+          const avatarUrl = f.foto_profil || fallbackApplicantAvatar;
           
           let initialStatusClass = "status-pending"
           if (app.status === "accepted") initialStatusClass = "status-accepted"
@@ -229,7 +238,7 @@
             <div class="applicant-card flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
               
               <div class="flex items-start gap-5">
-                <img src="${avatarUrl}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-gray-200 shadow-sm">
+                <img src="${avatarUrl}" onerror="this.onerror=null; this.src='${fallbackApplicantAvatar}';" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-gray-200 shadow-sm">
                 
                 <div>
                   <h3 class="text-lg font-bold text-gray-900">${f.nama || "Unknown Freelancer"}</h3>

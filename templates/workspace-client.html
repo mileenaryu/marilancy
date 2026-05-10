@@ -92,7 +92,7 @@
     <div class="flex-1 flex justify-end items-center gap-5 ">
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
@@ -180,10 +180,24 @@
       if (!data) return
       
       localStorage.setItem("client_id", data.ID)
-      const firstName = (data.nama || data.nama_client || "Klien").split(' ')[0]
+      const clientName = data.nama || data.nama_client || "Klien"
+      const firstName = clientName.split(' ')[0]
       document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-      document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`
+      
+      const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
+      const profileImgElement = document.getElementById("profile_img");
+      
+      if (data.foto_profil && data.foto_profil !== "") {
+          profileImgElement.src = data.foto_profil;
+          profileImgElement.onerror = function() {
+              this.onerror = null;
+              this.src = fallbackAvatar;
+          };
+      } else {
+          profileImgElement.src = fallbackAvatar;
+      }
     }
+
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get("project_id") || 1; 
 
@@ -264,22 +278,7 @@
         });
       }
     }
-    async function loadProfileMini() {
-      const data = await safeFetch("/client/profile", { headers: { "Authorization": "Bearer " + token } })
-      if (!data) return
-      
-      localStorage.setItem("client_id", data.ID)
-      const clientName = data.nama || data.nama_client || "Klien"
-      const firstName = clientName.split(' ')[0]
-      document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`
-
-      if (data.foto_profil && data.foto_profil !== "") {
-          document.getElementById("profile_img").src = data.foto_profil;
-      } else {
-          document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=2b9c96&color=fff`;
-      }
-    }
-
+    
     async function submitTask(e) {
       e.preventDefault();
       const titleInput = document.getElementById("taskTitle");
@@ -348,6 +347,7 @@
 
     function logout() { localStorage.clear(); alert("Berhasil logout"); window.location.href = "/"; }
     function goProfile() { window.location.href = "/client/profile/view" }
+    
     loadProfileMini();
     loadClientWorkspace();
   </script>

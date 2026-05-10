@@ -117,7 +117,7 @@
     <div class="flex-1 flex justify-end items-center gap-5 ">
       <span id="userGreeting" class="text-sm font-medium"></span>
       <div class="profile-box cursor-pointer" onclick="goProfile()">
-        <img id="profile_img" src="https://ui-avatars.com/api/?name=User" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
+        <img id="profile_img" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';" class="profile-img w-10 h-10 rounded-full object-cover" alt="User">
       </div>
       <button onclick="logout()" class="btn-teal px-5 py-2 rounded-md text-sm font-semibold transition">
         Logout
@@ -127,7 +127,7 @@
 
   <div class="bg-black text-white text-center pt-32 pb-24 relative mt-16">
     <h1 class="text-4xl font-bold tracking-wide" id="heroName">Nama Perusahaan</h1>
-    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=User&background=random&color=fff" class="profile-avatar" alt="Profile Picture">
+    <img id="heroAvatar" src="https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=User&background=2b9c96&color=fff';" class="profile-avatar" alt="Profile Picture">
   </div>
 
   <div class="max-w-6xl mx-auto px-4 mt-28 pb-20">
@@ -332,7 +332,6 @@
       return token
     }
 
-
     function showSection(section) {
       if (section === 'edit') {
         document.getElementById("viewSection").classList.add("hidden")
@@ -381,12 +380,24 @@
         document.getElementById("heroName").innerText = clientName
         document.getElementById("userGreeting").innerText = `Hi, ${shortName}!`
         
-        let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=2b9c96&color=fff`;
+        const heroAvatarElement = document.getElementById("heroAvatar");
+        const profileImgElement = document.getElementById("profile_img");
+        
         if (data.foto_profil && data.foto_profil !== "") {
-            avatarUrl = data.foto_profil;
+            heroAvatarElement.src = data.foto_profil;
+            profileImgElement.src = data.foto_profil;
+            
+            const handleError = function() {
+                this.onerror = null;
+                this.src = fallbackAvatar;
+            };
+            heroAvatarElement.onerror = handleError;
+            profileImgElement.onerror = handleError;
+        } else {
+            heroAvatarElement.src = fallbackAvatar;
+            profileImgElement.src = fallbackAvatar;
         }
-        document.getElementById("heroAvatar").src = avatarUrl
-        document.getElementById("profile_img").src = avatarUrl
 
         document.getElementById("viewNama").innerText = clientName
         document.getElementById("viewJenisUsaha").innerText = data.jenis_usaha || "-"
@@ -403,7 +414,6 @@
         const galeriInfo = document.getElementById("currentGaleriInfo");
         
         if (data.galeri && data.galeri !== "") {
-
           galeriImage.src = data.galeri;
           galeriImage.classList.remove("hidden");
           galeriText.classList.add("hidden");
