@@ -219,8 +219,8 @@
       const diff = Math.floor((new Date() - new Date(dateString)) / 60000)
       if (diff < 1) return "Baru saja"
       if (diff < 60) return diff + " min ago"
-      if (diff < 1440) return Math.floor(diff / 60) + " jam ago"
-      return Math.floor(diff / 1440) + " hari ago"
+      if (diff < 1440) return Math.floor(diff / 60) + " hours ago"
+      return Math.floor(diff / 1440) + " days ago"
     }
     function renderNavbar() {
         const navLinks = document.getElementById("navLinks");
@@ -269,6 +269,8 @@
         })
         originalJob = job
         await loadMyApplications() 
+        const displayJudul = job.job_no ? `${job.judul} <span class="text-lg font-medium text-gray-500 ml-2">(${job.job_no})</span>` : job.judul;
+  
 
         const alreadyApplied = myApplications.some(app => app.job_id == parseInt(id) && app.status !== "withdrawn")
         
@@ -321,7 +323,7 @@
                     <img src="${clientAvatar}" class="w-16 h-16 rounded-full object-cover bg-gray-100 hover:ring-2 hover:ring-teal-500 transition" alt="Logo">
                   </a>
                   <div>
-                    <h2 class="text-2xl font-bold text-gray-900">${job.judul}</h2>
+                    <h2 class="text-2xl font-bold text-gray-900">${displayJudul}</h2>
                     <a href="${clientProfileUrl}" class="text-sm text-teal-600 hover:underline hover:text-teal-800 mt-1 block font-medium">
                       ${job.client?.nama_client || "Klien Anonim"} <i class="ri-external-link-line text-xs ml-1"></i>
                     </a>
@@ -439,9 +441,14 @@
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="md:col-span-2">
+            <div class="md:col-span-1">
               <label class="text-sm font-semibold text-gray-700">Judul Proyek</label>
               <input id="edit_judul" value="${job.judul}" class="input-form" />
+            </div>
+            
+            <div class="md:col-span-1">
+              <label class="text-sm font-semibold text-gray-700">Nomor/ID Job</label>
+              <input id="edit_job_no" value="${job.job_no || ''}" class="input-form" placeholder="Opsional" />
             </div>
             
             <div>
@@ -544,6 +551,7 @@
     async function saveJob(jobId) {
       const payload = {
         judul: document.getElementById("edit_judul").value,
+        job_no: document.getElementById("edit_job_no").value,
         job_desc: document.getElementById("edit_desc").value,
         kebutuhan_proyek: document.getElementById("edit_proyek").value,
         kebutuhan_skill: document.getElementById("edit_skill").value,
@@ -619,6 +627,10 @@
       }
     }
 
+    function getReadNotifs() {
+      return JSON.parse(localStorage.getItem("readNotifs")) || [];
+    }
+
     async function loadNavbarData() {
       if (!token) return;
 
@@ -629,21 +641,40 @@
           const firstName = fullName.split(' ')[0];
           document.getElementById("userGreeting").innerText = `Hi, ${firstName}!`;
           
-
           if(profile.foto_profil) {
             document.getElementById("profile_img").src = profile.foto_profil;
           } else {
-   
             document.getElementById("profile_img").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2b9c96&color=fff`;
           }
         }
 
         const apps = await safeFetch("/freelancer/applications", { headers: { "Authorization": "Bearer " + token } })
         if(apps) {
-          const updated = apps.filter(app => app.status === "accepted" || app.status === "rejected")
-          if (updated.length > 0) {
-            document.getElementById("notifBadge").innerText = updated.length
-            document.getElementById("notifBadge").classList.remove("hidden")
+          const readNotifs = getReadNotifs();
+          
+          const unreadCount = apps.filter(app => {
+              const job = app.job || app.Job || {};
+              let isNotif = false;
+              
+              if (app.status === "accepted" || app.status === "rejected") {
+                  isNotif = true;
+              } else if (app.status === "pending" && (job.status === "dihapus" || job.status === "ditutup")) {
+                  isNotif = true;
+              }
+
+              if (isNotif && readNotifs.includes(app.id)) {
+                  isNotif = false;
+              }
+
+              return isNotif;
+          });
+
+          const badge = document.getElementById("notifBadge")
+          if (unreadCount.length > 0) {
+            badge.innerText = unreadCount.length
+            badge.classList.remove("hidden")
+          } else {
+            badge.classList.add("hidden")
           }
         }
       } else if(role === 'client') {

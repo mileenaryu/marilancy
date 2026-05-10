@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 
 	"marilancy/config"
 	"marilancy/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func ApplyJob(c *gin.Context) {
@@ -220,15 +222,21 @@ func UpdateApplicationStatus(c *gin.Context) {
 		err := config.DB.Where("job_id = ? AND freelancer_id = ?", app.JobID, app.FreelancerID).First(&existingProject).Error
 
 		if err != nil {
-
-			newProject := models.Project{
-				JobID:        app.JobID,
-				ClientID:     job.ClientID,
-				FreelancerID: app.FreelancerID,
-				Status:       "active",
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				newProject := models.Project{
+					JobID:        app.JobID,
+					ClientID:     job.ClientID,
+					FreelancerID: app.FreelancerID,
+					Status:       "active",
+				}
+				if createErr := config.DB.Create(&newProject).Error; createErr != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal membuat project"})
+					return
+				}
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Terjadi kesalahan pada database"})
+				return
 			}
-			config.DB.Create(&newProject)
-
 		}
 	}
 

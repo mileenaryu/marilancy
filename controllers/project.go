@@ -189,6 +189,7 @@ func GetMyProjects(c *gin.Context) {
 			"job":      p.Job,
 			"client":   p.Client,
 			"progress": progress,
+			"tasks":    p.Tasks,
 		})
 	}
 

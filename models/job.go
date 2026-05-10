@@ -5,6 +5,7 @@ import "time"
 type Job struct {
 	ID                uint   `gorm:"primaryKey" json:"id"`
 	Judul             string `json:"judul"`
+	JobNo             string `json:"job_no"`
 	JobDesc           string `json:"job_desc"`
 	KebutuhanProyek   string `json:"kebutuhan_proyek"`
 	KebutuhanSkill    string `json:"kebutuhan_skill"`

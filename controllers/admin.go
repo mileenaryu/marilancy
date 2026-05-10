@@ -59,7 +59,7 @@ func DeleteClient(c *gin.Context) {
 
 func AdminGetJobs(c *gin.Context) {
 	var jobs []models.Job
-	if err := config.DB.Preload("Client").Find(&jobs).Error; err != nil {
+	if err := config.DB.Preload("Client").Where("status != ?", "dihapus").Find(&jobs).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal ambil job"})
 		return
 	}
@@ -68,8 +68,8 @@ func AdminGetJobs(c *gin.Context) {
 
 func DeleteJobs(c *gin.Context) {
 	id := c.Param("id")
-	if err := config.DB.Delete(&models.Job{}, id).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal hapus"})
+	if err := config.DB.Model(&models.Job{}).Where("id = ?", id).Update("status", "dihapus").Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal hapus job"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"msg": "Berhasil dihapus"})

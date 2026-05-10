@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"marilancy/config"
 	"marilancy/models"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,11 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	if !strings.HasSuffix(strings.ToLower(input.Email), "@gmail.com") {
+		c.JSON(400, gin.H{"error": "Hanya email dengan format @gmail.com yang dapat didaftarkan"})
+		return
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), 10)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Gagal hash password"})
@@ -31,7 +37,6 @@ func Register(c *gin.Context) {
 	}
 
 	switch input.Role {
-
 	case "freelancer":
 		err = config.DB.Create(&models.Freelancer{
 			Nama:     input.Nama,
@@ -78,6 +83,11 @@ func Login(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !strings.HasSuffix(strings.ToLower(input.Email), "@gmail.com") {
+		c.JSON(400, gin.H{"error": "Gunakan email @gmail.com untuk login"})
 		return
 	}
 

@@ -159,6 +159,8 @@
                 ? p.freelancer.foto_profil 
                 : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.freelancer.nama)}&background=random&color=fff`;
 
+            const displayJudul = p.job.job_no ? `${p.job.judul || "-"} <span class="text-sm font-normal text-gray-500 ml-2">(${p.job.job_no})</span>` : (p.job.judul || "-");
+
             let actionButtons = `
               <div class="flex flex-col gap-2 items-end">
                  <a href="/client/workspace?project_id=${p.id}" class="bg-[#2b9c96] hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg text-xs font-bold shadow-sm transition">Pantau Proyek</a>
@@ -213,10 +215,10 @@
                  <span class="absolute top-6 left-6 text-[10px] font-bold px-3 py-1 rounded-full ${badgeClass}">${badgeText}</span>
                  
                  <div class="flex flex-col md:flex-row gap-5 mt-10">
-                    <!-- UBAH BAGIAN IMG SRC MENJADI VARIABEL avatarFreelancer -->
                     <img src="${avatarFreelancer}" class="w-14 h-14 rounded-full object-cover">
                     <div class="flex-1">
-                       <h3 class="text-xl font-bold text-gray-900">${p.job.judul}</h3>
+                       <!-- UBAH BAGIAN INI UNTUK MENAMPILKAN DISPLAY JUDUL -->
+                       <h3 class="text-xl font-bold text-gray-900">${displayJudul}</h3>
                        <p class="text-xs text-gray-500 mt-0.5">Dikerjakan oleh: <span class="font-bold text-gray-700">${p.freelancer.nama}</span></p>
                        
                        <div class="flex items-center gap-3 mt-4 pr-0 md:pr-32">

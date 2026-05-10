@@ -102,7 +102,7 @@
 
   <div class="max-w-5xl mx-auto px-4 py-10">
     
-    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8 mt-20">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <span id="projectBadge" class="text-xs font-bold text-[#2b9c96] uppercase tracking-wider bg-[#eaf6f4] px-3 py-1 rounded-full mb-2 inline-block">Active Project</span>
@@ -193,8 +193,14 @@
       });
       if (res.ok) {
         const data = await res.json();
-        
-        document.getElementById("projectName").innerText = data.project.job.judul;
+        const jobJudul = data.project.job.judul || "-";
+        const jobNo = data.project.job.job_no;
+        const displayJudul = jobNo 
+            ? `${jobJudul} <span class="text-lg font-medium text-gray-400 ml-2">(${jobNo})</span>` 
+            : jobJudul;
+
+        document.getElementById("projectName").innerHTML = displayJudul; 
+
         document.getElementById("freelancerName").innerText = data.project.freelancer.nama;
         
         document.getElementById("progressText").innerText = data.progress + "%";

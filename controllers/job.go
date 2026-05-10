@@ -5,6 +5,7 @@ import (
 	"marilancy/config"
 	"marilancy/models"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,6 +39,7 @@ func CreateJob(c *gin.Context) {
 
 	var input struct {
 		Judul             string   `json:"judul"`
+		JobNo             string   `json:"job_no"`
 		JobDesc           string   `json:"job_desc"`
 		KebutuhanProyek   string   `json:"kebutuhan_proyek"`
 		KebutuhanSkill    string   `json:"kebutuhan_skill"`
@@ -58,6 +60,19 @@ func CreateJob(c *gin.Context) {
 		return
 	}
 
+	if input.Judul == "" || input.JobDesc == "" || input.KebutuhanProyek == "" ||
+		input.KebutuhanSkill == "" || input.Kategori == "" || input.Budget == "" ||
+		input.BatasPendidikan == "" || input.PengalamanKerja == "" ||
+		input.Tipe == "" || input.LokasiPelaksanaan == "" || input.Level == "" {
+		c.JSON(400, gin.H{"error": "Semua field wajib diisi"})
+		return
+	}
+
+	if strings.ContainsAny(input.Judul, "0123456789") {
+		c.JSON(400, gin.H{"error": "Judul tidak boleh mengandung angka. Silakan masukkan angka di field Nomor/ID Job."})
+		return
+	}
+
 	userID, ok := getUserID(c)
 	if !ok {
 		c.JSON(401, gin.H{"error": "Unauthorized"})
@@ -71,11 +86,12 @@ func CreateJob(c *gin.Context) {
 	}
 
 	if client.NamaClient == "" || client.Kontak == "" || client.Lokasi == "" || client.JenisUsaha == "" {
-		c.JSON(400, gin.H{"error": "Profil belum lengkap! Harap lengkapi Profil Anda (Nama Perusahaan, Kontak, Lokasi, dan Jenis Usaha) sebelum mem-posting job."})
+		c.JSON(400, gin.H{"error": "Profil belum lengkap! Harap lengkapi Profil Anda sebelum mem-posting job."})
 		return
 	}
 
 	job.Judul = input.Judul
+	job.JobNo = input.JobNo
 	job.JobDesc = input.JobDesc
 	job.KebutuhanProyek = input.KebutuhanProyek
 	job.KebutuhanSkill = input.KebutuhanSkill
@@ -138,6 +154,7 @@ func GetJobs(c *gin.Context) {
 		result = append(result, gin.H{
 			"id":                 job.ID,
 			"judul":              job.Judul,
+			"job_no":             job.JobNo,
 			"job_desc":           job.JobDesc,
 			"kebutuhan_proyek":   job.KebutuhanProyek,
 			"kebutuhan_skill":    job.KebutuhanSkill,
@@ -217,6 +234,12 @@ func DeleteJob(c *gin.Context) {
 		return
 	}
 
+	if err := tx.Exec("DELETE FROM tasks WHERE project_id IN (SELECT id FROM projects WHERE job_id = ?)", job.ID).Error; err != nil {
+		tx.Rollback()
+		c.JSON(500, gin.H{"error": "Gagal hapus tasks terkait"})
+		return
+	}
+
 	if err := tx.Where("job_id = ?", job.ID).
 		Delete(&models.Project{}).Error; err != nil {
 
@@ -227,7 +250,7 @@ func DeleteJob(c *gin.Context) {
 
 	tx.Commit()
 
-	c.JSON(200, gin.H{"message": "Job & semua application dihapus"})
+	c.JSON(200, gin.H{"message": "Job, tasks, project, & application berhasil dihapus"})
 }
 
 func UpdateJob(c *gin.Context) {
@@ -252,6 +275,7 @@ func UpdateJob(c *gin.Context) {
 
 	var input struct {
 		Judul             string `json:"judul"`
+		JobNo             string `json:"job_no"`
 		JobDesc           string `json:"job_desc"`
 		KebutuhanProyek   string `json:"kebutuhan_proyek"`
 		KebutuhanSkill    string `json:"kebutuhan_skill"`
@@ -272,6 +296,7 @@ func UpdateJob(c *gin.Context) {
 
 	updateData := map[string]interface{}{
 		"judul":              input.Judul,
+		"job_no":             input.JobNo,
 		"job_desc":           input.JobDesc,
 		"kebutuhan_proyek":   input.KebutuhanProyek,
 		"kebutuhan_skill":    input.KebutuhanSkill,

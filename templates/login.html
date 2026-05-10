@@ -112,6 +112,11 @@ async function login() {
     return
   }
 
+  if (!email.toLowerCase().endsWith("@gmail.com")) {
+    showError("User Tidak Ditemukan")
+    return
+  }
+
   try {
     const res = await fetch("/login", {
       method: "POST",

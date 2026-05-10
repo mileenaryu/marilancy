@@ -803,10 +803,14 @@
 
           const canWithdraw = app.status === "pending" && job.status !== "dihapus" && job.status !== "ditutup"
 
+          const displayJudul = job.job_no 
+            ? `${job.judul} <span class="text-sm font-normal text-gray-500 ml-1">(${job.job_no})</span>` 
+            : (job.judul ? job.judul : "Job Tidak Tersedia");
+
           html += `
             <div id="app-${app.id}" class="border border-gray-200 rounded-xl p-5 flex justify-between items-center bg-gray-50 hover:bg-white transition">
               <div>
-                <p class="font-bold text-lg text-gray-900 mb-1">${job.judul ? job.judul : "Job Tidak Tersedia"}</p>
+                <p class="font-bold text-lg text-gray-900 mb-1">${displayJudul}</p>
                 <p class="text-xs text-gray-500 mb-3">Tanggal Lamaran: ${new Date(app.tanggal_daftar).toLocaleDateString('id-ID')}</p>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize ${badgeColor}">${finalStatus}</span>
               </div>
@@ -857,18 +861,46 @@
       }
     }
 
+    function getReadNotifs() {
+      return JSON.parse(localStorage.getItem("readNotifs")) || [];
+    }
+
     async function loadNotificationCount() {
-      const res = await fetch("/freelancer/applications", {
-        headers: { "Authorization": "Bearer " + token }
-      })
-      if (!res.ok) return
-      const data = await res.json()
-      const updated = data.filter(app => app.status === "accepted" || app.status === "rejected")
-      
-      const badge = document.getElementById("notifBadge")
-      if (updated.length > 0) {
-        badge.innerText = updated.length
-        badge.classList.remove("hidden")
+      try {
+        const response = await fetch("/freelancer/applications", {
+          headers: { "Authorization": "Bearer " + token }
+        })
+        
+        if (!response.ok) return;
+        const res = await response.json()
+        
+        const readNotifs = getReadNotifs();
+        const unreadCount = res.filter(app => {
+            const job = app.job || app.Job || {};
+            let isNotif = false;
+            
+            if (app.status === "accepted" || app.status === "rejected") {
+                isNotif = true;
+            } else if (app.status === "pending" && (job.status === "dihapus" || job.status === "ditutup")) {
+                isNotif = true;
+            }
+
+            if (isNotif && readNotifs.includes(app.id)) {
+                isNotif = false;
+            }
+
+            return isNotif;
+        });
+        
+        const badge = document.getElementById("notifBadge")
+        if (unreadCount.length > 0) {
+          badge.innerText = unreadCount.length
+          badge.classList.remove("hidden")
+        } else {
+          badge.classList.add("hidden")
+        }
+      } catch (err) {
+        console.error("Gagal load notif badge:", err)
       }
     }
 
